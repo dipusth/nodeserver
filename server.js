@@ -2,6 +2,8 @@ const express = require("express");
 const fs = require("fs");
 const cors = require('cors');
 const { error } = require("console");
+const path = require('path');
+const filePath = path.join(__dirname, 'products.json');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -125,6 +127,22 @@ app.get("/products/:id", (req, res) => {
   res.json(product);
 });
 
+// POST route to add a product
+app.post('/products', (req, res) => {
+  const newproduct = req.body
+  console.log('newproduct', newproduct);
+  if (!newproduct || !newproduct.title || !newproduct.price) {
+    return res.status(400).json({ message: "Product title and price are required" });
+  }
+  // Generate a new ID (simple increment logic)
+  const newId = (products.length + 1).toString(); // keep as string to match product JSON
+  const productToAdd = {
+    id: newId,
+    ...newproduct
+  };
+  products.push(productToAdd);
+ saveProductsToFile(res, () => res.status(201).json(productToAdd));
+})
 
 // PUT update product by id
 app.put('/products/:id', (req, res) => {
@@ -136,7 +154,7 @@ app.put('/products/:id', (req, res) => {
   if (index === -1) return res.status(404).send('Product not found');
 
   products[index] = { ...products[index], ...updatedProduct };
-  res.json(products[index]);
+  saveProductsToFile(res, () => res.json(products[index]));
 });
 
 // DELETE product by id
@@ -146,8 +164,20 @@ app.delete('/products/:id', (req, res) => {
   const index = products.findIndex(p => p.id === id);
   if (index === -1) return res.status(404).send('Product not found');
   products.splice(index, 1);
-  res.status(204).send(); // No content
+  saveProductsToFile(res, () => res.status(204).send());
 });
+
+  // Save to products.json file
+const saveProductsToFile = (res, successCallback) => {
+  fs.writeFile(filePath, JSON.stringify(products, null, 2), (err) => {
+    if (err) {
+      console.error("Error saving product:", err);
+      return res.status(500).json({ message: "Error saving product" });
+    }
+    console.log("Product saved successfully");
+    if (successCallback) successCallback();
+  });
+};
 
 
 
