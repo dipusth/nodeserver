@@ -6,6 +6,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors()); // This allows requests from any origin
+
+// allowed origins if needed
+// const allowedOrigins = ["https://yourfrontenddomain.com"];
+
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     // allow requests with no origin (like mobile apps or curl)
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.includes(origin)) {
+//       return callback(null, true);
+//     } else {
+//       return callback(new Error("Not allowed by CORS"));
+//     }
+//   }
+// }));
+
 app.use(express.json());
 
 let products = require("./products.json");
