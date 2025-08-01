@@ -142,5 +142,13 @@
     "category": "Men's Clothing",
     "description": "new image",
     "image": "https://nodeserver-qidn.onrender.com/uploads/4f4c7dbedde9d6b88aa0bee6dc992cdc"
+  },
+  {
+    "id": "26",
+    "title": "trouser",
+    "price": "600",
+    "category": "Men's Clothing",
+    "description": "new trouser",
+    "image": "https://nodeserver-qidn.onrender.com/uploads/ff4aaba574649b436fba255b53e58e0c"
   }
 ]
