@@ -94,5 +94,45 @@
     "description": "dfdfdf",
     "category": "Men's Clothing",
     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
+  },
+  {
+    "id": "18",
+    "title": "fgfg",
+    "price": 600,
+    "category": "Men's Clothing",
+    "descriptions": "dfdf",
+    "image": "uploads\\dd6df6a97d567345b5f6ed63d51bb5f8"
+  },
+  {
+    "id": "19",
+    "title": "cvcv",
+    "price": "50",
+    "category": "Men's Clothing",
+    "descriptions": "cvcv",
+    "image": "http://localhost:3000/uploads/c4a2eb24fda9cc84ddc2f309fabbc095"
+  },
+  {
+    "id": "20",
+    "title": "newp",
+    "price": "109.95",
+    "category": "Men's Clothing",
+    "descriptions": "new descrop[tiom",
+    "image": "http://localhost:3000/uploads/44c1c3ea7a98f03175143323816a7b9e"
+  },
+  {
+    "id": "21",
+    "title": "fgfg",
+    "price": "600",
+    "category": "Men's Clothing",
+    "descriptions": "new des",
+    "image": "http://localhost:3000/uploads/05c5f1145c0a1537b638a9f711f60fb0"
+  },
+  {
+    "id": "22",
+    "title": "gdfg",
+    "price": "50",
+    "category": "Men's Clothing",
+    "description": "retreter",
+    "image": "http://localhost:3000/uploads/326aa6a0ac13dc7fde1cdd9b8129ddfc"
   }
 ]

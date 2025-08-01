@@ -1,12 +1,14 @@
 const express = require("express");
 const fs = require("fs");
+const multer = require('multer');
 const cors = require('cors');
 const { error } = require("console");
 const path = require('path');
 const filePath = path.join(__dirname, 'products.json');
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+const upload = multer({ dest: 'uploads/' });
+app.use('/uploads', express.static('uploads')); // This allows Express to serve uploaded files via URL, like:
 app.use(cors()); // This allows requests from any origin
 
 // allowed origins if needed
@@ -34,88 +36,6 @@ app.get("/", (req, res) => {
 })
 
 app.get('/products', (req,res) => {
-  // const products = [
-  //   {
-  //     "id": "1",
-  //     "title": "women's ring",
-  //     "price": "100",
-  //     "description": "New fashion shirt",
-  //     "category": "Men's Clothing",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "2",
-  //     "title": "men's bracelet",
-  //     "price": "500",
-  //     "description": "New ring",
-  //     "category": "Jewelery",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "3",
-  //     "title": "new one",
-  //     "price": "50",
-  //     "description": "hjhjhj",
-  //     "category": "Men's Clothing",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "8",
-  //     "title": "last added product",
-  //     "price": "600",
-  //     "description": "dfdfdf",
-  //     "category": "Men's Clothing",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "10",
-  //     "title": "ghh",
-  //     "price": "600",
-  //     "description": "ghgh",
-  //     "category": "Men's Clothing",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "11",
-  //     "title": "ghgh",
-  //     "price": "600",
-  //     "description": "fghgfh",
-  //     "category": "Men's Clothing",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "12",
-  //     "title": "ghgh",
-  //     "price": "50",
-  //     "description": "ghgh",
-  //     "category": "Men's Clothing",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "13",
-  //     "title": "ghjgfhg",
-  //     "price": "60",
-  //     "description": "ghgfhfg",
-  //     "category": "Men's Clothing",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "14",
-  //     "title": "kerrosine",
-  //     "price": "56",
-  //     "description": "gfgfgfgf",
-  //     "category": "Jewelery",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   },
-  //   {
-  //     "id": "15",
-  //     "title": "newproduct",
-  //     "price": "600",
-  //     "description": "fggfdg",
-  //     "category": "Men's Clothing",
-  //     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  //   }
-  // ]
   res.json(products)
 })
 
@@ -127,22 +47,53 @@ app.get("/products/:id", (req, res) => {
   res.json(product);
 });
 
+
+// Configure Multer for file storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Folder to save uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  }
+});
+
+
+
+// Create 'uploads' directory if not exists
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
+
 // POST route to add a product
-app.post('/products', (req, res) => {
-  const newproduct = req.body
-  console.log('newproduct', newproduct);
-  if (!newproduct || !newproduct.title || !newproduct.price) {
+// POST route to add a product
+app.post('/products', upload.single("image"), (req, res) => {
+  const newproduct = req.body;
+
+  if (!req.file) {
+    return res.status(400).json({ message: "Image file is required" });
+  }
+
+  // Create full URL to access the image
+  const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+  newproduct.image = imageUrl; // Assign image URL instead of just file path
+
+  // Optional: Validate product
+  if (!newproduct.title || !newproduct.price) {
     return res.status(400).json({ message: "Product title and price are required" });
   }
-  // Generate a new ID (simple increment logic)
-  const newId = (products.length + 1).toString(); // keep as string to match product JSON
+
+  const newId = (products.length + 1).toString();
   const productToAdd = {
     id: newId,
     ...newproduct
   };
+
   products.push(productToAdd);
- saveProductsToFile(res, () => res.status(201).json(productToAdd));
-})
+  saveProductsToFile(res, () => res.status(201).json(productToAdd));
+});
+
 
 // PUT update product by id
 app.put('/products/:id', (req, res) => {
