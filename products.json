@@ -134,5 +134,13 @@
     "category": "Men's Clothing",
     "description": "retreter",
     "image": "http://localhost:3000/uploads/326aa6a0ac13dc7fde1cdd9b8129ddfc"
+  },
+  {
+    "id": "23",
+    "title": "prtofile",
+    "price": "600",
+    "category": "Men's Clothing",
+    "description": "pp",
+    "image": "http://localhost:3000/uploads/f3ef39601df4cc9cc5d1b3aa02306d48"
   }
 ]

@@ -69,13 +69,15 @@ if (!fs.existsSync("uploads")) {
 // POST route to add a product
 app.post('/products', upload.single("image"), (req, res) => {
   const newproduct = req.body;
+  console.log('req on post', req);
 
   if (!req.file) {
     return res.status(400).json({ message: "Image file is required" });
   }
 
   // Create full URL to access the image
-  const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`; //localhost:3000/uploads/filename.ext
+  const imageUrl = `https://nodeserver-qidn.onrender.com/uploads/${req.file.filename}`; // Use your actual server URL if hosted
 
   newproduct.image = imageUrl; // Assign image URL instead of just file path
 
