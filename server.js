@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs");
+
 const multer = require('multer');
 const cors = require('cors');
 const { error } = require("console");
@@ -65,7 +66,7 @@ if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
 
-// POST route to add a product
+
 // POST route to add a product
 app.post('/products', upload.single("image"), (req, res) => {
   const newproduct = req.body;
@@ -98,17 +99,25 @@ app.post('/products', upload.single("image"), (req, res) => {
 
 
 // PUT update product by id
-app.put('/products/:id', (req, res) => {
-  const id = req.params.id; // keep as string to match product JSON
+app.put('/products/:id', upload.single("image"), (req, res) => {
+  const id = req.params.id;
   if (!id) return res.status(400).send('Product ID is required');
-  const updatedProduct = req.body;
 
   const index = products.findIndex(p => p.id === id);
   if (index === -1) return res.status(404).send('Product not found');
 
-  products[index] = { ...products[index], ...updatedProduct };
+  const updatedData = req.body;
+
+  if (req.file) {
+    const imageUrl = `https://nodeserver-qidn.onrender.com/uploads/${req.file.filename}`;
+    updatedData.image = imageUrl;
+  }
+
+  products[index] = { ...products[index], ...updatedData };
+
   saveProductsToFile(res, () => res.json(products[index]));
 });
+
 
 // DELETE product by id
 app.delete('/products/:id', (req, res) => {
@@ -117,7 +126,9 @@ app.delete('/products/:id', (req, res) => {
   const index = products.findIndex(p => p.id === id);
   if (index === -1) return res.status(404).send('Product not found');
   products.splice(index, 1);
-  saveProductsToFile(res, () => res.status(204).send());
+ saveProductsToFile(res, () => {
+  res.status(200).json({ message: 'Product deleted successfully', id });
+});
 });
 
   // Save to products.json file

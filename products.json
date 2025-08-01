@@ -1,27 +1,11 @@
 [
   {
-    "id": "1",
-    "title": "women's bracelet",
-    "price": "100",
-    "description": "New fashion shirt",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
-    "id": "2",
-    "title": "men's bracelet",
-    "price": "500",
-    "description": "New ring",
-    "category": "Jewelery",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
     "id": "3",
-    "title": "new one",
-    "price": "50",
-    "description": "hjhjhj",
+    "title": "men trouser",
+    "price": "5000",
+    "description": "new trouser",
     "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
+    "image": "https://nodeserver-qidn.onrender.com/uploads/d00850a57957283928a377fd1362892e"
   },
   {
     "id": "8",
@@ -137,10 +121,26 @@
   },
   {
     "id": "23",
-    "title": "prtofile",
+    "title": "men second trouser",
+    "price": "5000",
+    "category": "Men's Clothing",
+    "description": "new trouser",
+    "image": "https://nodeserver-qidn.onrender.com/uploads/54006c81ebccdee59df58ac14d28c8b2"
+  },
+  {
+    "id": "24",
+    "title": "new product",
     "price": "600",
     "category": "Men's Clothing",
-    "description": "pp",
-    "image": "http://localhost:3000/uploads/f3ef39601df4cc9cc5d1b3aa02306d48"
+    "description": "checking",
+    "image": "https://nodeserver-qidn.onrender.com/uploads/c4c774065a20f064ca1e7eed0cc4cf33"
+  },
+  {
+    "id": "25",
+    "title": "new image",
+    "price": "500",
+    "category": "Men's Clothing",
+    "description": "new image",
+    "image": "https://nodeserver-qidn.onrender.com/uploads/4f4c7dbedde9d6b88aa0bee6dc992cdc"
   }
 ]
