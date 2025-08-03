@@ -57,19 +57,12 @@
   },
   {
     "id": "13",
-    "title": "ghjgfhg",
-    "price": "60",
+    "title": "product 13",
+    "price": "800",
     "description": "ghgfhfg",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
-    "id": "14",
-    "title": "kerrosine",
-    "price": "56",
-    "description": "gfgfgfgf",
-    "category": "Jewelery",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
+    "category": "Women's Clothing",
+    "image": "http://localhost:3000/uploads/1754221038649.png",
+    "messages": "women clothing 13 updating"
   },
   {
     "id": "15",

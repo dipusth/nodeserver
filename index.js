@@ -190,3 +190,6 @@ app.use("/files", express.static("files"));
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// Vercel requires this export
+module.exports = app;
