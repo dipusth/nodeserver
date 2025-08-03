@@ -96,14 +96,6 @@
     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
   },
   {
-    "id": "18",
-    "title": "fgfg",
-    "price": 600,
-    "category": "Men's Clothing",
-    "descriptions": "dfdf",
-    "image": "uploads\\dd6df6a97d567345b5f6ed63d51bb5f8"
-  },
-  {
     "id": "19",
     "title": "cvcv",
     "price": "50",
@@ -142,5 +134,37 @@
     "category": "Men's Clothing",
     "description": "pp",
     "image": "http://localhost:3000/uploads/f3ef39601df4cc9cc5d1b3aa02306d48"
+  },
+  {
+    "id": "25",
+    "title": "Patel Jewellery 25",
+    "price": "26600000",
+    "category": "Jewelery",
+    "messages": "By online the best ornaments",
+    "image": "http://localhost:3000/uploads/1754219639630.jpg"
+  },
+  {
+    "id": "29",
+    "title": "new prof",
+    "price": "500",
+    "category": "Men's Clothing",
+    "messages": "triswer",
+    "image": "http://localhost:3000/uploads/1754050344634.jpg"
+  },
+  {
+    "id": "30",
+    "title": "fgfdg",
+    "price": "60",
+    "category": "Men's Clothing",
+    "messages": "juyiuyi",
+    "image": "http://localhost:3000/uploads/1754207943091.png"
+  },
+  {
+    "id": "31",
+    "title": "Anola Women's African Pink Dress",
+    "price": "995220",
+    "category": "Women's Clothing",
+    "messages": "Indulge in the romance and charm of our Anola African Print Dress. Anola, meaning 'wealthy family' in Yoruba, will make you feel sophisticated and elegant on any occasion.  With fashion forward details (ruffles and puff-sleeves), this dress will make you feel enchantingly beautiful. Pair with your favorite heels and you're sure to exude timeless allure. ",
+    "image": "http://localhost:3000/uploads/1754219872962.webp"
   }
 ]
