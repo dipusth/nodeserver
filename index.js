@@ -1,156 +1,225 @@
 const express = require("express");
-const cors = require("cors");
+const fs = require("fs");
 const multer = require("multer");
+const cors = require("cors");
 const path = require("path");
-const fs = require("fs").promises;
+
 const app = express();
-
-// ======================
-// Configuration
-// ======================
 const PORT = process.env.PORT || 3000;
-const BASE_URL = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : `http://localhost:${PORT}`;
 
 // ======================
-// Optional MongoDB Setup (only if environment variables exist)
+// Environment Configuration
 // ======================
-let dbClient, productsCollection;
-if (process.env.DB_URL && process.env.DB_NAME) {
-  const { MongoClient } = require("mongodb");
-  (async () => {
-    try {
-      dbClient = new MongoClient(process.env.DB_URL);
-      await dbClient.connect();
-      productsCollection = dbClient
-        .db(process.env.DB_NAME)
-        .collection("products");
-      console.log("Connected to MongoDB");
-    } catch (err) {
-      console.error("MongoDB connection failed, using JSON fallback:", err);
-    }
-  })();
+const isVercel = process.env.VERCEL === "1";
+const isProduction = process.env.NODE_ENV === "production";
+const isLocal = !isVercel && !isProduction;
+
+// Dynamic paths
+const getUploadDir = () =>
+  isVercel ? "/tmp/uploads" : path.join(__dirname, "uploads");
+const getFilesDir = () =>
+  isVercel ? "/tmp/files" : path.join(__dirname, "files");
+const getProductsPath = () =>
+  isVercel ? "/tmp/products.json" : path.join(__dirname, "products.json");
+
+// Initialize directories (local only)
+if (isLocal) {
+  [getUploadDir(), getFilesDir()].forEach((dir) => {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  });
 }
 
 // ======================
-// CORS Setup
+// Middleware Setup
 // ======================
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://127.0.0.1:5500",
-  "https://yourdomain.com", // Replace with your actual domain
-];
+app.use(cors());
+app.use(express.json());
 
+// Serve static files with proper caching
 app.use(
-  cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+  "/uploads",
+  express.static(getUploadDir(), {
+    maxAge: "1d",
+    fallthrough: false,
   })
 );
 
+app.use("/files", express.static(getFilesDir()));
+
 // ======================
-// File Upload Setup
+// File Upload Configuration
 // ======================
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, "/tmp/uploads/");
-    },
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, `${Date.now()}${ext}`);
-    },
-  }),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, getUploadDir());
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${Date.now()}${ext}`);
+  },
 });
 
-app.use("/uploads", express.static("/tmp/uploads"));
+const upload = multer({ storage });
 
 // ======================
-// Data Access Layer (Auto-selects MongoDB or JSON)
+// Data Management
 // ======================
-const productsPath = path.join(__dirname, "products.json");
+let products = [];
 
-async function getProducts() {
-  if (productsCollection) {
-    try {
-      return await productsCollection.find({}).toArray();
-    } catch (err) {
-      console.error("MongoDB fetch failed, falling back to JSON:", err);
-    }
-  }
-
-  try {
-    const data = await fs.readFile(productsPath, "utf8");
-    return JSON.parse(data);
-  } catch (err) {
-    console.error("Error reading products.json:", err);
-    return [];
+// Load products with error handling
+try {
+  products = require(getProductsPath());
+} catch (err) {
+  if (err.code === "MODULE_NOT_FOUND") {
+    console.log("No existing products file found, starting with empty array");
+    products = [];
+  } else {
+    console.error("Error loading products:", err);
   }
 }
 
-async function saveProducts(products) {
-  if (productsCollection) {
-    try {
-      await productsCollection.deleteMany({});
-      await productsCollection.insertMany(products);
-      return;
-    } catch (err) {
-      console.error("MongoDB save failed, falling back to JSON:", err);
-    }
-  }
-
-  await fs.writeFile(productsPath, JSON.stringify(products, null, 2));
-}
-
 // ======================
-// API Routes (remain unchanged)
+// Route Handlers
 // ======================
 app.get("/", (req, res) => {
   res.json({
-    message: "Product API Server",
-    storage: productsCollection ? "MongoDB" : "JSON file",
+    message: "API Server Running",
+    environment: isVercel ? "Vercel" : isProduction ? "Production" : "Local",
+    paths: {
+      uploads: getUploadDir(),
+      files: getFilesDir(),
+      products: getProductsPath(),
+    },
   });
 });
 
-app.get("/products", async (req, res) => {
-  try {
-    const products = await getProducts();
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
+// Get all products
+app.get("/products", (req, res) => {
+  res.json(products);
 });
 
-// [Include all your other routes here...]
+// Get single product
+app.get("/products/:id", (req, res) => {
+  const product = products.find((p) => p.id === req.params.id);
+  if (!product) return res.status(404).json({ message: "Product not found" });
+  res.json(product);
+});
+
+// Create new product
+app.post("/products", upload.single("image"), (req, res) => {
+  const newProduct = req.body;
+
+  if (!req.file) {
+    return res.status(400).json({ message: "Image file is required" });
+  }
+
+  const baseUrl = isVercel
+    ? `https://${process.env.VERCEL_URL}`
+    : `${req.protocol}://${req.get("host")}`;
+
+  newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+  newProduct.id = (products.length + 1).toString();
+
+  products.push(newProduct);
+  saveProductsToFile(res, () => res.status(201).json(newProduct));
+});
+
+// Update product
+app.put("/products/:id", upload.single("image"), (req, res) => {
+  const id = req.params.id;
+  if (!id) return res.status(400).json({ message: "Product ID is required" });
+
+  const updatedProduct = req.body;
+  const baseUrl = isVercel
+    ? `https://${process.env.VERCEL_URL}`
+    : `${req.protocol}://${req.get("host")}`;
+
+  if (req.file) {
+    updatedProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+  } else if (updatedProduct.existingImage) {
+    updatedProduct.image = updatedProduct.existingImage;
+  }
+
+  const index = products.findIndex((p) => p.id === id);
+  if (index === -1)
+    return res.status(404).json({ message: "Product not found" });
+
+  products[index] = { ...products[index], ...updatedProduct };
+  saveProductsToFile(res, () => res.json(products[index]));
+});
+
+// Delete product
+app.delete("/products/:id", (req, res) => {
+  const index = products.findIndex((p) => p.id === req.params.id);
+  if (index === -1)
+    return res.status(404).json({ message: "Product not found" });
+
+  products.splice(index, 1);
+  saveProductsToFile(res, () =>
+    res.json({ success: true, message: "Product deleted" })
+  );
+});
+
+// List files
+app.get("/files", (req, res) => {
+  fs.readdir(getFilesDir(), (err, files) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Failed to read directory",
+        details: isLocal ? err.message : undefined,
+      });
+    }
+
+    const baseUrl = isVercel
+      ? `https://${process.env.VERCEL_URL}`
+      : `${req.protocol}://${req.get("host")}`;
+
+    res.json(
+      files.map((file) => ({
+        name: file,
+        url: `${baseUrl}/files/${file}`,
+      }))
+    );
+  });
+});
+
+// ======================
+// Helper Functions
+// ======================
+const saveProductsToFile = (res, successCallback) => {
+  fs.writeFile(getProductsPath(), JSON.stringify(products, null, 2), (err) => {
+    if (err) {
+      console.error("Save error:", err);
+      return res.status(500).json({
+        message: "Error saving data",
+        error: isLocal ? err.message : undefined,
+      });
+    }
+    successCallback();
+  });
+};
 
 // ======================
 // Error Handling
 // ======================
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong!" });
+  res.status(500).json({
+    message: "Internal server error",
+    error: isLocal ? err.message : undefined,
+  });
 });
 
 // ======================
-// Server Export
+// Server Initialization
 // ======================
-module.exports = app;
-
-// Start server if not in Vercel environment
-if (!process.env.VERCEL) {
+if (isLocal) {
   app.listen(PORT, () => {
-    console.log(`Server running on ${BASE_URL}`);
-    console.log(
-      `Using storage: ${productsCollection ? "MongoDB" : "JSON file"}`
-    );
+    console.log(`Server running in LOCAL mode on http://localhost:${PORT}`);
+    console.log(`Upload directory: ${getUploadDir()}`);
+    console.log(`Files directory: ${getFilesDir()}`);
+    console.log(`Products database: ${getProductsPath()}`);
   });
 }
 
-// Cleanup MongoDB connection on exit
-process.on("SIGINT", async () => {
-  if (dbClient) await dbClient.close();
-  process.exit();
-});
+module.exports = app;

@@ -1,19 +1,12 @@
 [
   {
-    "id": "2",
-    "title": "men's bracelet",
-    "price": "500",
-    "description": "New ring",
-    "category": "Jewelery",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
     "id": "3",
-    "title": "new one",
-    "price": "50",
+    "title": "Gift item",
+    "price": "5000",
     "description": "hjhjhj",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
+    "category": "Jewelery",
+    "image": "http://localhost:3000/uploads/1754291342149.avif",
+    "messages": "gift item updasted"
   },
   {
     "id": "8",
@@ -54,11 +47,12 @@
   },
   {
     "id": "19",
-    "title": "cvcv",
-    "price": "50",
-    "category": "Men's Clothing",
+    "title": "cvcv 19",
+    "price": "5000",
+    "category": "Jewelery",
     "descriptions": "cvcv",
-    "image": "http://localhost:3000/uploads/c4a2eb24fda9cc84ddc2f309fabbc095"
+    "image": "http://localhost:3000/uploads/1754291273866.jpg",
+    "messages": "cvcv 19 updated"
   },
   {
     "id": "20",
@@ -109,8 +103,9 @@
     "title": "new prof",
     "price": "500",
     "category": "Men's Clothing",
-    "messages": "triswer",
-    "image": "http://localhost:3000/uploads/1754050344634.jpg"
+    "messages": "triswer updating now",
+    "image": "http://localhost:3000/uploads/1754293644604.jpg",
+    "existingImage": "http://localhost:3000/uploads/1754050344634.jpg"
   },
   {
     "id": "30",
@@ -129,5 +124,21 @@
     "messages": "Indulge in the romance and charm of our Anola African Print Dress. Anola, meaning 'wealthy family' in Yoruba, will make you feel sophisticated and elegant on any occasion.  With fashion forward details (ruffles and puff-sleeves), this dress will make you feel enchantingly beautiful. Pair with your favorite heels and you're sure to exude timeless allure. ",
     "image": "http://localhost:3000/uploads/1754219872962.webp",
     "existingImage": "http://localhost:3000/uploads/1754219872962.webp"
+  },
+  {
+    "title": "fgdg",
+    "price": "60",
+    "category": "Men's Clothing",
+    "messages": "gfdgfg",
+    "id": "16",
+    "image": "http://localhost:3000/uploads/1754293533514.avif"
+  },
+  {
+    "title": "truyuytutyu",
+    "price": "109.95",
+    "category": "Men's Clothing",
+    "messages": "ghghgh",
+    "id": "17",
+    "image": "http://localhost:3000/uploads/1754293579891.jpg"
   }
 ]
