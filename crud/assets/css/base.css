@@ -1,0 +1,511 @@
+html {
+  font-size: 16px; /* Prevents scaling */
+}
+body {
+  font-family: "Nunito", sans-serif;
+  font-size: 14px;
+    background-color: #f5f6fa;
+  overflow-x: hidden;
+  color: #364A63;
+
+}
+
+h1,h2,h3,h4,h5{
+  color: #364A63 ;
+}
+.container {
+  margin: 0 auto;
+  padding: 0 0.9375rem;
+
+  @media (min-width: 768px) {
+    max-width: 1246px !important;
+  }
+}
+
+.text-has-sup {
+  position: relative;
+
+  sup {
+    left: auto;
+    right: -2rem;
+    position: absolute;
+    top: 1.125rem;
+  }
+}
+
+.logo {
+  &:focus-visible,
+  &:focus {
+    outline: none;
+  }
+}
+section {
+  padding: 2.5rem 0;
+  @media (min-width: 992px) {
+    padding: 3.75rem 0;
+  }
+}
+ul {
+  li {
+    margin-bottom: 0.3125rem;
+  }
+}
+table {
+  width: 100%;
+  text-align: left;
+  color: var(--table);
+  .fa{
+    font-size: 12px;
+  }
+  th{
+    font-weight: 600;
+  }
+  td,
+  th {
+    border-bottom: 1px solid var(--table-border);
+    padding: .625rem 1.25rem;
+  }
+
+  td {
+    img {
+      height: 4.375rem
+      /* margin: 0 auto; */
+    }
+  }
+}
+
+.table-responsive {
+  color: var(--table);
+  width: 100%;
+  overflow-x: auto;
+  table{
+    border: 1px solid var(--table-border);
+    tbody{
+      background-color: white
+    }
+  }
+  @media (min-width: 74.9375rem) {
+    overflow-x: visible;
+  }
+}
+.title {
+  color: #1e1f24;
+  font-weight: 700;
+  font-family: var(--text-nohemi);
+}
+.text-gradient {
+  background: linear-gradient(
+    180deg,
+    var(--gradient1) 0%,
+    var(--gradient2) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.link {
+  font-size: 1.125rem;
+  line-height: normal;
+  font-weight: 600;
+}
+
+.text-title {
+  font-family: var(--text-nohemi) !important;
+}
+
+.text-sm {
+  font-size: 16px !important;
+}
+.text-large {
+  font-size: 6.25rem;
+  @media (min-width: 1199px) {
+    font-size: 7.5rem;
+  }
+  @media (min-width: 1366px) {
+    font-size: 9.375rem;
+  }
+}
+.text-1 {
+  font-size: 3rem !important;
+  font-weight: 600;
+  line-height: 4.5rem;
+  @media (min-width: 992px) {
+    font-size: 4rem !important;
+  }
+}
+
+.text-2 {
+  font-size: 2.75rem !important;
+  line-height: 120%;
+}
+
+.text-3 {
+  font-size: 1.5rem !important;
+  line-height: normal;
+  @media (min-width: 992px) {
+    font-size: 2rem !important;
+  }
+}
+
+.text-4 {
+  font-size: 1.25rem !important;
+  @media (min-width: 992px) {
+    font-size: 1.75rem !important;
+  }
+}
+
+.text-5 {
+  font-size: 1.125rem !important;
+  @media (min-width: 992px) {
+    font-size: 1.5rem !important;
+  }
+}
+
+.text-6 {
+  font-size: 1.25rem;
+  line-height: 120%;
+}
+
+.text-7 {
+  font-size: 1.125rem;
+  line-height: 120%;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 3rem;
+  padding: 6px 12px;
+  cursor: pointer;
+  min-width: 150px;
+  font-size: 18px;
+  border-radius: 10px;
+
+  @media (min-width: 768px) {
+    padding: 10px 21px;
+    /* min-width: 190px; */
+  }
+}
+
+.btn-close{
+  position: absolute;
+  top: -0.1875rem;
+  right: -0.5rem;
+  font-size: 1.25rem;
+}
+
+.btn-gradient {
+  border-radius: 10px;
+  background: linear-gradient(
+    180deg,
+    var(--gradient1) 0%,
+    var(--gradient2) 100%
+  );
+  /* background: var(--Gradient, linear-gradient(180deg, #1DAA7E 0%, #1A8463 100%)); */
+}
+
+.btn-shadow {
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    box-shadow: 0 5px 1px var(--primary-900);
+    border-radius: 10px;
+  }
+}
+
+.box-shadow {
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+}
+.overlay {
+  background-color: rgba(0, 0, 0, 0.3);
+  height: 100%;
+  width: 100%;
+  top: 0;
+  position: absolute;
+  border-radius: inherit;
+}
+
+.tag {
+  border-radius: 0.3125rem;
+  padding: 5px 1.25rem;
+}
+
+.list-divider {
+  li {
+    &:not(:last-child) {
+      &:after {
+        content: "|";
+        padding: 0 0.625rem;
+      }
+    }
+  }
+}
+
+.item-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  @media (min-width: 1240px) {
+    max-width: 1240px !important ;
+  }
+  padding: 0 15px;
+}
+
+.dropdown-option{
+  cursor: pointer;
+  padding: 3px;
+}
+.dropdown-menu{
+  background-color: white;
+  border-radius: .5rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  min-width: 8.125rem;
+  left: -260%;
+  top: .3rem;
+  transition: all 0.1s linear;
+  li{
+    margin: 0;
+       &:not(:last-child){
+        border-bottom: 1px solid #e0e0e0;
+      }
+    }
+  .list, a{
+    width: 100%;
+    padding: .5rem 1.375rem;
+    display: block;
+    transition: all 0.3s linear;
+    &:hover:not(.delete){
+      background-color: #f5f6fa;
+      color: var(--blue);
+    }
+    &:hover{
+      background-color: var(--secondary-50);
+      color: var(--secondary-500);
+    }
+  }
+}
+
+.dropdown-option + .dropdown-menu{
+   visibility: hidden;
+   display: none;
+   /* top: 0; */
+}
+.dropdown-option.active + .dropdown-menu{
+   visibility: visible;
+   z-index: 1;
+   display: block;
+   /* top: -10px; */
+}
+.modal{
+  transition: all 0.2s linear;
+  padding-top: 0;
+}
+
+.delay{
+  opacity: 1;
+  padding-top: 1.25rem;
+
+}
+.icon-circle {
+  background-color: #e8f1ff;
+  width: 80px;
+  height: 80px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.circle {
+  border-radius: 100%;
+  display: inline-flex;
+  border: 3px solid var(--white);
+  background-color: var(--white);
+  overflow: hidden;
+  width: 3.125rem;
+  height: 3.125rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.circle-wrap {
+  display: inline-flex;
+
+  .circle {
+    box-shadow: 2px 8px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .circle:not(:first-child) {
+    margin-left: -0.9375rem;
+  }
+}
+
+.circle-md {
+  width: 3.5rem;
+  height: 3.5rem;
+  @media (min-width: 768px) {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
+
+.circle-sm {
+  width: 3rem;
+  height: 3rem;
+}
+
+.block-absolute {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  top: 0;
+  left: 0;
+}
+
+.icon-md {
+  width: 3.125rem;
+  height: 3.125rem;
+  svg {
+    width: 2rem;
+    height: 2rem;
+    color: gold;
+  }
+  img {
+    width: 30px;
+  }
+}
+
+.icon-xs{
+  font-size: .75rem;
+}
+
+.icon-circle {
+  background-color: black;
+  padding: 5px;
+  border-radius: 50%;
+}
+.item-center {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.headline {
+  a {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 1.5rem;
+  }
+}
+
+.card {
+  color: var(--white);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  transition: all 0.5s linear;
+  overflow: hidden;
+  @media (max-width: 991px) {
+    &:not(:last-child) {
+      margin-bottom: 2.5rem;
+    }
+  }
+
+  p {
+    font-size: 1.125rem;
+  }
+
+  .bg-img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.card-lg {
+  padding: 1rem 2rem 1rem 3.5rem;
+  @media (min-width: 1199px) {
+    padding: 1.9375rem 2.375rem 1.9375rem 4.125rem;
+  }
+}
+
+.card-red {
+  background-color: #f45b5b;
+}
+
+.card-green {
+  background-color: #5492a0;
+}
+
+.card-purple {
+  background-color: #6c64a8;
+}
+
+.card-brown {
+  background-color: #a88964;
+}
+
+/* Rating */
+.rating { 
+  border: none;
+  float: left;
+}
+
+.rating > input { display: none; } 
+.rating > label:before { 
+  margin: 5px;
+  font-size: 1.25em;
+  font-family: FontAwesome;
+  display: inline-block;
+  content: "\f005";
+}
+
+.rating > .half:before { 
+  content: "\f089";
+  position: absolute;
+}
+
+.rating > label { 
+  color: #ddd; 
+ float: right; 
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.rating > input:checked ~ label, /* show gold star when clicked */
+.rating:not(:checked) > label:hover, /* hover current star */
+.rating:not(:checked) > label:hover ~ label { color: #FFD700;  } /* hover previous stars in list */
+
+.rating > input:checked + label:hover, /* hover current star when changing rating */
+.rating > input:checked ~ label:hover,
+.rating > label:hover ~ input:checked ~ label, /* lighten current selection */
+.rating > input:checked ~ label:hover ~ label { color: #FFED85;  } 
+ /* <fieldset class="rating">
+    <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
+    <input type="radio" id="star4half" name="rating" value="4 and a half" /><label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
+    <input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+    <input type="radio" id="star3half" name="rating" value="3 and a half" /><label class="half" for="star3half" title="Meh - 3.5 stars"></label>
+    <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
+    <input type="radio" id="star2half" name="rating" value="2 and a half" /><label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
+    <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+    <input type="radio" id="star1half" name="rating" value="1 and a half" /><label class="half" for="star1half" title="Meh - 1.5 stars"></label>
+    <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+    <input type="radio" id="starhalf" name="rating" value="half" /><label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
+</fieldset> */
+

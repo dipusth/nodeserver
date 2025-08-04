@@ -96,6 +96,7 @@ app.get("/", (req, res) => {
 // Get all products
 app.get("/products", (req, res) => {
   res.json(products);
+  console.log("Products fetched:", products);
 });
 
 // Get single product

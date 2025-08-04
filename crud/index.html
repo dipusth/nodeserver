@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="This is Abroad Shikshya" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="https://fakestoreapi.com/favicon-32x32.png"
+    />
+    <title>CRUD - operation with error handling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">     <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./assets/css/reset.css" />
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="./assets/js/script.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+              primary: {
+                DEFAULT: "#3A4895", // Default primary color
+              },
+              yellow: {
+                DEFAULT: "#ffd663", // Default yellow color
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body>
+    <div class="container wrapper p-6 lg:p-6">
+      <div class="flex items-center justify-between">
+        <div class="flex gap-8 items-center justify-center lg:justify-start">
+          <h1 class="text-3 text-primary">Fake Store</h1>
+          <span class="icon-circle icon-md">
+            <svg
+              stroke="currentColor"
+              fill="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              class="theme-icon"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 160c-52.9 0-96 43.1-96 96s43.1 96 96 96 96-43.1 96-96-43.1-96-96-96zm246.4 80.5l-94.7-47.3 33.5-100.4c4.5-13.6-8.4-26.5-21.9-21.9l-100.4 33.5-47.4-94.8c-6.4-12.8-24.6-12.8-31 0l-47.3 94.7L92.7 70.8c-13.6-4.5-26.5 8.4-21.9 21.9l33.5 100.4-94.7 47.4c-12.8 6.4-12.8 24.6 0 31l94.7 47.3-33.5 100.5c-4.5 13.6 8.4 26.5 21.9 21.9l100.4-33.5 47.3 94.7c6.4 12.8 24.6 12.8 31 0l47.3-94.7 100.4 33.5c13.6 4.5 26.5-8.4 21.9-21.9l-33.5-100.4 94.7-47.3c13-6.5 13-24.7.2-31.1zm-155.9 106c-49.9 49.9-131.1 49.9-181 0-49.9-49.9-49.9-131.1 0-181 49.9-49.9 131.1-49.9 181 0 49.9 49.9 49.9 131.1 0 181z"
+              ></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="mt-8 gap-4">
+        <div class="table-responsive rounded-lg">
+          <div class="flex items-center justify-between py-3">
+            <div>
+              <h4 class="text-5 font-bold">Product List Table</h4>
+              <p>New product will be<span class="text-blue-500 font-medium mx-1">concatenated, added</span>to the list</p>
+            </div>
+
+            <!-- Modal -->
+            <div
+              id="addNewFormModal"
+              class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden"
+            >
+              <div class="bg-white p-6 rounded-lg shadow-lg w-[40%] relative border">
+                <div class="text-center pb-3">
+                  <h2 class="text-3 font-bold text-center" id="head-title">Add New Product</h2>
+                  <p>
+                    Handling<span class="text-red-500 ml-1 font-bold"
+                      >{Error}</span
+                    >
+                    on Form Submit
+                  </p>
+                </div>
+                <form
+                  
+                  class="flex justify-center lg:justify-between form-col-2 flex-wrap gap-2 form-area"
+                >
+                  <div class="flex gap-4">
+                    <div class="w-full">
+                      <label
+                        for="title"
+                        class="block text-sm/6 font-medium text-gray-900"
+                        >Title</label
+                      >
+                      <div class="mt-2">
+                        <input
+                          type="text"
+                          name="title"
+                          id="title"
+                          autocomplete="given-name"
+                          class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        />
+                      </div>
+                    </div>
+                    <div class="w-full">
+                      <label
+                        for="price"
+                        class="block text-sm/6 font-medium text-gray-900"
+                        >Price</label
+                      >
+                      <div class="mt-2">
+                        <input
+                          type="text"
+                          name="price"
+                          id="price"
+                          autocomplete="given-name"
+                          class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="sm:col-span-3">
+                    <label
+                      for="category"
+                      class="block text-sm/6 font-medium text-gray-900"
+                      >Category</label
+                    >
+                    <div class="mt-2 grid grid-cols-1">
+                      <select
+                        id="category"
+                        name="category"
+                        class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 border focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      >
+                        <option>Men's Clothing</option>
+                        <option>Women's Clothing</option>
+                        <option>Jewelery</option>
+                      </select>
+                      <svg
+                        class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                        viewBox="0 0 16 16"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        data-slot="icon"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="sm:col-span-3">
+                    <label
+                      for="image"
+                      class="block text-sm/6 font-medium text-gray-900"
+                      >Upload Image</label
+                    >
+                    <input
+                      type="file"
+                      name="image"
+                      id="image"
+                      class="w-full text-slate-500 font-medium text-sm bg-white border file:cursor-pointer cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-slate-500 rounded"
+                    />
+                  </div>
+                  <div class="sm:col-span-3 w-full">
+                    <label
+                      for="messages"
+                      class="block text-sm/6 font-medium text-gray-900"
+                      >messages</label
+                    >
+                    <textarea
+                      id="messages"
+                      name="messages"
+                      rows="4"
+                      class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Description..."
+                    ></textarea>
+                  </div>
+                  <div class="submit-response"></div>
+                  <button
+                    type="submit"
+                    id="productformSubmit"
+                    class="bg-primary p-3 rounded-lg text-white"
+                  >
+                  <span> Add New Product</span>
+                   <i
+                      class="fa-solid fa-circle-notch spinner ml-3"
+                    ></i>
+                  </button>
+                </form>
+                <button
+                  type="button"
+                  id="btnCloseNew"
+                  class="btn-close px-4 py-2 rounded"
+                  id="btn-productClose"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+            <!-- Button -->
+            <button
+              type="button"
+              id="btnAddNew"
+              class="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              <i class="fa-solid fa-plus"></i>
+              <span class="ml-1">Add New</span>
+            </button>
+          </div>
+          <table class="table-responsive table-products">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

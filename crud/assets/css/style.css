@@ -1,0 +1,130 @@
+
+.card {
+  background-color: white;
+  transition: all 0.1s linear;
+  position: relative;
+  top: 0;
+  img {
+    border-radius: 20px;
+    transform: scale(1);
+    transition: transform 0.8s linear;
+    max-height: 10rem;
+  }
+  &:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    img {
+      transform: scale(1.15);
+    }
+    top: -10px;
+  }
+}
+
+#button {
+  display: none;
+}
+
+
+
+.card-inner {
+  min-height: 14rem;
+  position: relative;
+  .icon-like {
+    top: 12px;
+    right: 12px;
+  }
+}
+.card-list {
+  .card {
+    min-width: 16rem;
+    max-width: 16rem;
+    cursor: pointer;
+  }
+}
+
+.icon-like {
+  cursor: pointer;
+  svg {
+    /* transition: all 0.3s linear; */
+    path {
+      stroke: white;
+      fill: white;
+    }
+  }
+  &.active {
+    svg {
+      animation: bounce 0.8s ease-in-out;
+      path {
+        stroke: #3a4895;
+        fill: #3a4895;
+      }
+    }
+  }
+}
+
+/* form */
+.form-container {
+  width: 21.875rem;
+  /* margin: 0 auto;
+    @media (min-width: 992px) {
+      max-width: 850px;
+  } */
+}
+.form-col-2 {
+  & > * {
+    min-width: 100%;
+    /* @media (min-width: 992px) {
+      min-width: 47%;
+    } */
+  }
+}
+.spinner {
+  display: none;
+}
+.show {
+  .spinner {
+    display: inline-block;
+    animation: spinner 15s linear infinite;
+  }
+}
+
+
+/* table */
+table{
+  td{
+    &.views{
+      min-width: 9.375rem;
+    }
+  }
+}
+/* animations */
+@keyframes spinner {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(3600deg);
+  }
+}
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.4);
+  }
+  50% {
+    transform: scale(0.7);
+  }
+  70% {
+    transform: scale(0.5);
+  }
+  80% {
+    transform: scale(0.8);
+  }
+  90% {
+    transform: scale(0.6);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
