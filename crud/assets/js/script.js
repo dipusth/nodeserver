@@ -34,8 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 // Fetch products api
-// const productApi = "http://localhost:3000/products";
-const productApi = "https://nodeserver-puce-tau.vercel.app/products"; //vercel
+const productApi = "http://localhost:3000/products";
+// const productApi = "https://nodeserver-puce-tau.vercel.app/products"; //vercel
 // const productApi = "https://nodeserver-qidn.onrender.com/products"; // render
 console.log("productApi", productApi);
 // Fetch users api
