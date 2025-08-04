@@ -1,13 +1,5 @@
 [
   {
-    "id": "1",
-    "title": "women's bracelet",
-    "price": "100",
-    "description": "New fashion shirt",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
     "id": "2",
     "title": "men's bracelet",
     "price": "500",
@@ -29,31 +21,9 @@
     "price": "600",
     "description": "dfdfdf",
     "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
-    "id": "10",
-    "title": "ghh",
-    "price": "600",
-    "description": "ghgh",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
-    "id": "11",
-    "title": "ghgh",
-    "price": "600",
-    "description": "fghgfh",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
-    "id": "12",
-    "title": "ghgh",
-    "price": "50",
-    "description": "ghgh",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
+    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg",
+    "messages": "updating",
+    "existingImage": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
   },
   {
     "id": "13",
@@ -73,20 +43,14 @@
     "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
   },
   {
-    "id": 16,
-    "title": "iphone 17",
-    "price": "2000000",
-    "description": "new iphone",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
     "id": "17",
     "title": "balrra",
     "price": "5464",
     "description": "dfdfdf",
     "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
+    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg",
+    "messages": "ring",
+    "existingImage": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
   },
   {
     "id": "19",
@@ -106,11 +70,13 @@
   },
   {
     "id": "21",
-    "title": "fgfg",
-    "price": "600",
+    "title": "user123",
+    "price": "1500",
     "category": "Men's Clothing",
     "descriptions": "new des",
-    "image": "http://localhost:3000/uploads/05c5f1145c0a1537b638a9f711f60fb0"
+    "image": "http://localhost:3000/uploads/05c5f1145c0a1537b638a9f711f60fb0",
+    "messages": "updating messages",
+    "existingImage": "http://localhost:3000/uploads/05c5f1145c0a1537b638a9f711f60fb0"
   },
   {
     "id": "22",
@@ -123,18 +89,20 @@
   {
     "id": "23",
     "title": "prtofile",
-    "price": "600",
+    "price": "60000",
     "category": "Men's Clothing",
     "description": "pp",
-    "image": "http://localhost:3000/uploads/f3ef39601df4cc9cc5d1b3aa02306d48"
+    "image": "http://localhost:3000/uploads/f3ef39601df4cc9cc5d1b3aa02306d48",
+    "messages": "profile pic",
+    "existingImage": "http://localhost:3000/uploads/f3ef39601df4cc9cc5d1b3aa02306d48"
   },
   {
     "id": "25",
     "title": "Patel Jewellery 25",
-    "price": "26600000",
+    "price": "2660",
     "category": "Jewelery",
     "messages": "By online the best ornaments",
-    "image": "http://localhost:3000/uploads/1754219639630.jpg"
+    "image": "http://localhost:3000/uploads/1754274648426.jpg"
   },
   {
     "id": "29",
@@ -146,11 +114,12 @@
   },
   {
     "id": "30",
-    "title": "fgfdg",
-    "price": "60",
-    "category": "Men's Clothing",
-    "messages": "juyiuyi",
-    "image": "http://localhost:3000/uploads/1754207943091.png"
+    "title": "Gift Items",
+    "price": "4000",
+    "category": "Jewelery",
+    "messages": "new gift items",
+    "image": "http://localhost:3000/uploads/1754207943091.png",
+    "existingImage": "http://localhost:3000/uploads/1754207943091.png"
   },
   {
     "id": "31",
