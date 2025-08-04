@@ -29,21 +29,22 @@
   },
   {
     "id": "15",
-    "title": "newproduct",
+    "title": "newproduct 123",
     "price": "600",
     "description": "fggfdg",
     "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
+    "image": "http://localhost:3000/uploads/1754309775516.webp",
+    "messages": "undefined updates"
   },
   {
     "id": "17",
-    "title": "balrra",
-    "price": "5464",
+    "title": "vercel app",
+    "price": "10",
     "description": "dfdfdf",
     "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg",
-    "messages": "ring",
-    "existingImage": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
+    "image": "http://localhost:3000/uploads/1754309879021.jpg",
+    "messages": "fsdgjgjpfg",
+    "existingImage": "http://localhost:3000/uploads/1754309879021.jpg"
   },
   {
     "id": "19",
@@ -140,5 +141,13 @@
     "messages": "ghghgh",
     "id": "17",
     "image": "http://localhost:3000/uploads/1754293579891.jpg"
+  },
+  {
+    "title": "vercel app",
+    "price": "6000",
+    "category": "Men's Clothing",
+    "messages": "fsdgjgjpfg",
+    "id": "17",
+    "image": "http://localhost:3000/uploads/1754309879021.jpg"
   }
 ]
