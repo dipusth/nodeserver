@@ -3,9 +3,23 @@ const fs = require("fs");
 const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
+const router = express.Router();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Serve static files (HTML, CSS, JS, images)
+app.use(express.static(path.join(__dirname, "crud")));
+
+// Handle API routes (if any)
+app.get("/api/products", (req, res) => {
+  res.json(require("./products.json")); // Example API endpoint
+});
+
+// Fallback: Serve index.html for SPA routing (React/Vue/Angular)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "crud", "index.html"));
+});
 
 // ======================
 // Environment Configuration
