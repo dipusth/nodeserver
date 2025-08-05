@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Serve static files (HTML, CSS, JS, images)
-app.use(express.static(path.join(__dirname, "crud")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // ======================
 // Environment Configuration
@@ -25,6 +25,14 @@ const getFilesDir = () =>
 const getProductsPath = () =>
   isVercel ? "/tmp/products.json" : path.join(__dirname, "products.json");
 
+// Helper function to read/write products
+const getProducts = () =>
+  JSON.parse(fs.readFileSync(path.join(__dirname, "products.json"), "utf8"));
+const saveProducts = (products) =>
+  fs.writeFileSync(
+    path.join(__dirname, "products.json"),
+    JSON.stringify(products, null, 2)
+  );
 // Initialize directories (local only)
 if (isLocal) {
   [getUploadDir(), getFilesDir()].forEach((dir) => {
@@ -84,22 +92,25 @@ try {
 // ======================
 // Route Handlers
 // ======================
-app.get("/", (req, res) => {
-  res.json({
-    message: "API Server Running",
-    environment: isVercel ? "Vercel" : isProduction ? "Production" : "Local",
-    paths: {
-      uploads: getUploadDir(),
-      files: getFilesDir(),
-      products: getProductsPath(),
-    },
-  });
-});
+// app.get("/", (req, res) => {
+//   res.json({
+//     message: "API Server Running",
+//     environment: isVercel ? "Vercel" : isProduction ? "Production" : "Local",
+//     paths: {
+//       uploads: getUploadDir(),
+//       files: getFilesDir(),
+//       products: getProductsPath(),
+//     },
+//   });
+// });
 
 // Get all products
 app.get("/products", (req, res) => {
-  res.json(products);
-  console.log("Products fetched:", products);
+  try {
+    res.json(getProducts());
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load products" });
+  }
 });
 
 // Get single product
@@ -122,7 +133,6 @@ app.post("/products", upload.single("image"), (req, res) => {
     : `${req.protocol}://${req.get("host")}`;
 
   newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
-  newProduct.id = (products.length + 1).toString();
 
   products.push(newProduct);
   saveProductsToFile(res, () => res.status(201).json(newProduct));

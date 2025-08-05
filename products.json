@@ -101,11 +101,11 @@
   },
   {
     "id": "29",
-    "title": "new prof",
-    "price": "500",
-    "category": "Men's Clothing",
-    "messages": "triswer updating now",
-    "image": "http://localhost:3000/uploads/1754293644604.jpg",
+    "title": "new prof edited",
+    "price": "500000",
+    "category": "Jewelery",
+    "messages": "new prof edited message",
+    "image": "http://localhost:3000/uploads/1754409327833.png",
     "existingImage": "http://localhost:3000/uploads/1754050344634.jpg"
   },
   {
@@ -149,5 +149,21 @@
     "messages": "fsdgjgjpfg",
     "id": "17",
     "image": "http://localhost:3000/uploads/1754309879021.jpg"
+  },
+  {
+    "title": "fghdf",
+    "price": "50",
+    "category": "Men's Clothing",
+    "messages": "fdgfdgfdg",
+    "id": "18",
+    "image": "http://localhost:3000/uploads/1754409178216.jpg"
+  },
+  {
+    "title": "chech",
+    "price": "60",
+    "category": "Men's Clothing",
+    "messages": "fgfgfg",
+    "id": "19",
+    "image": "http://localhost:3000/uploads/1754409222993.png"
   }
 ]
