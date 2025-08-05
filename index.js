@@ -131,17 +131,26 @@ const upload = multer({ storage });
 let products = [];
 
 // Load products with error handling
-if (!isVercel) {
-  try {
-    products = require(getProductsPath());
-  } catch (err) {
-    if (err.code === "MODULE_NOT_FOUND") {
-      console.log("No existing products file found, starting with empty array");
-      products = [];
-    } else {
-      console.error("Error loading products:", err);
+// if (!isVercel) {
+//   try {
+//     products = require(getProductsPath());
+//   } catch (err) {
+//     if (err.code === "MODULE_NOT_FOUND") {
+//       console.log("No existing products file found, starting with empty array");
+//       products = [];
+//     } else {
+//       console.error("Error loading products:", err);
+//     }
+//   }
+// }
+// For uploads and files directories (needed even on Vercel)
+if (isVercel) {
+  [getUploadDir(), getFilesDir()].forEach((dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`Created directory on Vercel: ${dir}`);
     }
-  }
+  });
 }
 
 // ======================
@@ -174,28 +183,26 @@ app.get("/api/test", (req, res) => {
   res.json(testData);
 });
 
-app.get("/api/files", (req, res) => {
+app.get("/api/files", async (req, res) => {
   try {
+    // Ensure directory exists
+    if (!fs.existsSync(getFilesDir())) {
+      fs.mkdirSync(getFilesDir(), { recursive: true });
+    }
+
     const files = fs.readdirSync(getFilesDir());
-    const fileDetails = files.map((file) => ({
-      name: file,
-      path: path.join(getFilesDir(), file),
-      type: path.extname(file).replace(".", "") || "file",
-      size: fs.statSync(path.join(getFilesDir(), file)).size,
-    }));
+    const baseUrl = `https://${req.get("host")}`;
 
     res.json({
-      directory: getFilesDir(),
-      fileCount: files.length,
-      files: fileDetails,
+      files: files.map((file) => ({
+        name: file,
+        url: `${baseUrl}/uploads/${file}`,
+      })),
     });
   } catch (error) {
     res.status(500).json({
-      error: "Directory read failed",
-      path: getFilesDir(),
-      solution: isLocal
-        ? `Create ${getFilesDir()} directory`
-        : "Check server logs",
+      error: "File system error",
+      details: process.env.NODE_ENV === "development" ? error.message : null,
     });
   }
 });
