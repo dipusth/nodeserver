@@ -10,17 +10,24 @@ const PORT = process.env.PORT || 3000;
 // Serve static files (HTML, CSS, JS, images)
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/public", express.static(path.join(__dirname, "public")));
-
 // ======================
 // Environment Configuration
 // ======================
-const isVercel = process.env.VERCEL === "1";
 const isProduction = process.env.NODE_ENV === "production";
-const isLocal = !isVercel && !isProduction;
+const isVercel =
+  process.env.VERCEL === "1" || process.env.AWS_LAMBDA_FUNCTION_VERCEL;
+const isLocal = !process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_VERCEL;
 
 // Dynamic paths
-const getUploadDir = () =>
-  isVercel ? "/tmp/uploads" : path.join(__dirname, "uploads");
+const getUploadDir = () => {
+  if (isVercel) return "/tmp/uploads";
+  // Create a local temp directory if needed
+  const localPath = path.join(__dirname, "temp/uploads");
+  if (isLocal && !fs.existsSync(localPath)) {
+    fs.mkdirSync(localPath, { recursive: true });
+  }
+  return localPath;
+};
 const getFilesDir = () =>
   isVercel ? "/tmp/files" : path.join(__dirname, "files");
 // In your index.js, modify the data persistence approach:
@@ -31,12 +38,61 @@ const getProductsPath = () => {
   }
   return path.join(__dirname, "products.json");
 };
+app.use("/static-files", express.static(getFilesDir()));
 
 // Initialize directories (local only)
 if (isLocal) {
-  [getUploadDir(), getFilesDir()].forEach((dir) => {
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  const initDirs = [getUploadDir(), getFilesDir()];
+
+  initDirs.forEach((dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`Created directory: ${dir}`);
+    }
+
+    // Add sample files if directory is empty
+    const dirFiles = fs.readdirSync(dir);
+    if (dirFiles.length === 0) {
+      const sampleFiles = {
+        [getFilesDir()]: ["sample_document.txt", "example_image.jpg"],
+        [getUploadDir()]: ["product_photo.jpg"],
+      };
+
+      sampleFiles[dir]?.forEach((file) => {
+        const filePath = path.join(dir, file);
+        if (!fs.existsSync(filePath)) {
+          fs.writeFileSync(
+            filePath,
+            `This is a sample ${path.extname(file).replace(".", "")} file`
+          );
+          console.log(`Created sample file: ${filePath}`);
+        }
+      });
+    }
   });
+
+  // Initialize products.json if empty
+  if (fs.existsSync(getProductsPath())) {
+    const productsData = fs.readFileSync(getProductsPath(), "utf8");
+    if (!productsData.trim()) {
+      fs.writeFileSync(
+        getProductsPath(),
+        JSON.stringify(
+          [
+            {
+              id: "1",
+              title: "Sample Product",
+              price: 9.99,
+              category: "examples",
+              image: "/uploads/product_photo.jpg",
+            },
+          ],
+          null,
+          2
+        )
+      );
+    }
+  }
 }
 
 // ======================
@@ -53,8 +109,6 @@ app.use(
     fallthrough: false,
   })
 );
-
-app.use("/files", express.static(getFilesDir()));
 
 // ======================
 // File Upload Configuration
@@ -95,11 +149,55 @@ if (!isVercel) {
 // ======================
 // Add this route to verify your API is reachable
 app.get("/api/test", (req, res) => {
-  res.json({
+  const testData = {
     status: "API is working",
-    vercel: isVercel,
-    files: fs.readdirSync("/tmp"), // Check what's in /tmp
-  });
+    environment: isVercel ? "Vercel" : "Local",
+    paths: {
+      uploadDir: getUploadDir(),
+      filesDir: getFilesDir(),
+      productsPath: getProductsPath(),
+    },
+    directoriesExist: {
+      uploadDir: fs.existsSync(getUploadDir()),
+      filesDir: fs.existsSync(getFilesDir()),
+    },
+  };
+
+  try {
+    testData.tmpFiles = isVercel
+      ? fs.readdirSync("/tmp")
+      : "Not checked in local development";
+  } catch (error) {
+    testData.tmpError = isLocal ? error.message : "Hidden in production";
+  }
+
+  res.json(testData);
+});
+
+app.get("/api/files", (req, res) => {
+  try {
+    const files = fs.readdirSync(getFilesDir());
+    const fileDetails = files.map((file) => ({
+      name: file,
+      path: path.join(getFilesDir(), file),
+      type: path.extname(file).replace(".", "") || "file",
+      size: fs.statSync(path.join(getFilesDir(), file)).size,
+    }));
+
+    res.json({
+      directory: getFilesDir(),
+      fileCount: files.length,
+      files: fileDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Directory read failed",
+      path: getFilesDir(),
+      solution: isLocal
+        ? `Create ${getFilesDir()} directory`
+        : "Check server logs",
+    });
+  }
 });
 
 app.get("/", (req, res) => {
