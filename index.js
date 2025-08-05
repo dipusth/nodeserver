@@ -168,39 +168,34 @@ let products = [];
 // Initialize products
 async function loadProducts() {
   try {
-    if (isVercel) {
-      products = JSON.parse(await kv.get("products")) || [];
-    } else {
-      // Local fallback
-      const productsPath = path.join(__dirname, "products.json");
-      if (fs.existsSync(productsPath)) {
-        products = require(productsPath);
-      }
-    }
+    products = JSON.parse(await kv.get("products")) || [];
   } catch (err) {
-    console.error("Error loading products:", err);
+    console.error("KV load error:", err);
     products = [];
   }
 }
 
+// async function saveProducts() {
+//   try {
+//     if (isVercel) {
+//       await kv.set("products", JSON.stringify(products));
+//     } else {
+//       fs.writeFileSync(
+//         path.join(__dirname, "products.json"),
+//         JSON.stringify(products, null, 2)
+//       );
+//     }
+//   } catch (err) {
+//     console.error("Error saving products:", err);
+//     throw err;
+//   }
+// }
 async function saveProducts() {
-  try {
-    if (isVercel) {
-      await kv.set("products", JSON.stringify(products));
-    } else {
-      fs.writeFileSync(
-        path.join(__dirname, "products.json"),
-        JSON.stringify(products, null, 2)
-      );
-    }
-  } catch (err) {
-    console.error("Error saving products:", err);
-    throw err;
-  }
+  await kv.set("products", JSON.stringify(products));
 }
 
 // Initialize on startup
-loadProducts();
+await loadProducts();
 // ======================
 // Route Handlers
 // ======================
@@ -275,13 +270,18 @@ app.get("/api/products/:id", (req, res) => {
 });
 
 // Get all products
+// app.get("/api/products", async (req, res) => {
+//   try {
+//     await loadProducts(); // Refresh from KV store
+//     res.json(products);
+//   } catch (err) {
+//     res.status(500).json({ error: "Failed to load products" });
+//   }
+// });
+
 app.get("/api/products", async (req, res) => {
-  try {
-    await loadProducts(); // Refresh from KV store
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to load products" });
-  }
+  await loadProducts(); // Always fetch fresh data
+  res.json(products);
 });
 
 // Create / Add new product
