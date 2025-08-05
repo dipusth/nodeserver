@@ -128,7 +128,6 @@ const upload = multer({ storage });
 // ======================
 // Data Management
 // ======================
-let products = [];
 
 // Load products with error handling
 // if (!isVercel) {
@@ -144,15 +143,64 @@ let products = [];
 //   }
 // }
 // For uploads and files directories (needed even on Vercel)
-if (isVercel) {
+
+// Initialize directories
+if (isLocal) {
   [getUploadDir(), getFilesDir()].forEach((dir) => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
-      console.log(`Created directory on Vercel: ${dir}`);
+      // Sample files initialization...
     }
   });
 }
+if (isVercel) {
+  [getUploadDir(), getFilesDir()].forEach((dir) => {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  });
+}
 
+// ======================
+// PRODUCTS DATABASE SOLUTION (REPLACEMENT)
+// ======================
+
+let products = [];
+
+// Initialize products
+async function loadProducts() {
+  try {
+    if (isVercel) {
+      products = JSON.parse(await kv.get("products")) || [];
+    } else {
+      // Local fallback
+      const productsPath = path.join(__dirname, "products.json");
+      if (fs.existsSync(productsPath)) {
+        products = require(productsPath);
+      }
+    }
+  } catch (err) {
+    console.error("Error loading products:", err);
+    products = [];
+  }
+}
+
+async function saveProducts() {
+  try {
+    if (isVercel) {
+      await kv.set("products", JSON.stringify(products));
+    } else {
+      fs.writeFileSync(
+        path.join(__dirname, "products.json"),
+        JSON.stringify(products, null, 2)
+      );
+    }
+  } catch (err) {
+    console.error("Error saving products:", err);
+    throw err;
+  }
+}
+
+// Initialize on startup
+loadProducts();
 // ======================
 // Route Handlers
 // ======================
@@ -219,11 +267,6 @@ app.get("/", (req, res) => {
   });
 });
 
-// Get all products
-app.get("/api/products", (req, res) => {
-  res.json(products);
-});
-
 // Get single product
 app.get("/api/products/:id", (req, res) => {
   const product = products.find((p) => p.id === req.params.id);
@@ -231,59 +274,159 @@ app.get("/api/products/:id", (req, res) => {
   res.json(product);
 });
 
-// Create new product
-app.post("/api/products", upload.single("image"), (req, res) => {
-  const newProduct = req.body;
-  console.log("New product data:", newProduct);
-
-  if (!req.file) {
-    return res.status(400).json({ message: "Image file is required" });
+// Get all products
+app.get("/api/products", async (req, res) => {
+  try {
+    await loadProducts(); // Refresh from KV store
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load products" });
   }
-
-  const baseUrl = isVercel
-    ? `https://${process.env.VERCEL_URL}`
-    : `${req.protocol}://${req.get("host")}`;
-
-  newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
-
-  products.push(newProduct);
-  saveProductsToFile(res, () => res.status(201).json(newProduct));
 });
 
-// Update product
-app.put("/api/products/:id", upload.single("image"), (req, res) => {
-  const id = req.params.id;
-  if (!id) return res.status(400).json({ message: "Product ID is required" });
+// Create / Add new product
+app.post("/api/products", upload.single("image"), async (req, res) => {
+  try {
+    const newProduct = req.body;
 
-  const updatedProduct = req.body;
-  const baseUrl = isVercel
-    ? `https://${process.env.VERCEL_URL}`
-    : `${req.protocol}://${req.get("host")}`;
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required" });
+    }
 
-  if (req.file) {
-    updatedProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
-  } else if (updatedProduct.existingImage) {
-    updatedProduct.image = updatedProduct.existingImage;
+    const baseUrl = isVercel
+      ? `https://${process.env.VERCEL_URL}`
+      : `${req.protocol}://${req.get("host")}`;
+
+    newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+    newProduct.id = Date.now().toString();
+
+    products.push(newProduct);
+    await saveProducts();
+    res.status(201).json(newProduct);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create product" });
   }
+});
+// Create new product
+// app.post("/api/products", upload.single("image"), (req, res) => {
+//   const newProduct = req.body;
+//   console.log("New product data:", newProduct);
 
-  const index = products.findIndex((p) => p.id === id);
-  if (index === -1)
-    return res.status(404).json({ message: "Product not found" });
+//   if (!req.file) {
+//     return res.status(400).json({ message: "Image file is required" });
+//   }
 
-  products[index] = { ...products[index], ...updatedProduct };
-  saveProductsToFile(res, () => res.json(products[index]));
+//   const baseUrl = isVercel
+//     ? `https://${process.env.VERCEL_URL}`
+//     : `${req.protocol}://${req.get("host")}`;
+
+//   newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+
+//   products.push(newProduct);
+//   saveProductsToFile(res, () => res.status(201).json(newProduct));
+// });
+
+// Update product
+// app.put("/api/products/:id", upload.single("image"), (req, res) => {
+//   const id = req.params.id;
+//   if (!id) return res.status(400).json({ message: "Product ID is required" });
+
+//   const updatedProduct = req.body;
+//   const baseUrl = isVercel
+//     ? `https://${process.env.VERCEL_URL}`
+//     : `${req.protocol}://${req.get("host")}`;
+
+//   if (req.file) {
+//     updatedProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+//   } else if (updatedProduct.existingImage) {
+//     updatedProduct.image = updatedProduct.existingImage;
+//   }
+
+//   const index = products.findIndex((p) => p.id === id);
+//   if (index === -1)
+//     return res.status(404).json({ message: "Product not found" });
+
+//   products[index] = { ...products[index], ...updatedProduct };
+//   saveProductsToFile(res, () => res.json(products[index]));
+// });
+app.put("/api/products/:id", upload.single("image"), async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ message: "Product ID is required" });
+
+    const updatedProduct = req.body;
+    const baseUrl = isVercel
+      ? `https://${process.env.VERCEL_URL}`
+      : `${req.protocol}://${req.get("host")}`;
+
+    // Handle image update
+    if (req.file) {
+      updatedProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+    } else if (updatedProduct.existingImage) {
+      updatedProduct.image = updatedProduct.existingImage;
+    }
+
+    const index = products.findIndex((p) => p.id === id);
+    if (index === -1) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Preserve the ID and merge changes
+    updatedProduct.id = id;
+    products[index] = { ...products[index], ...updatedProduct };
+
+    // Save to KV (Vercel) or filesystem (local)
+    await saveProducts();
+
+    res.json(products[index]);
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({
+      message: "Failed to update product",
+      error: isLocal ? err.message : undefined,
+    });
+  }
 });
 
 // Delete product
-app.delete("/api/products/:id", (req, res) => {
-  const index = products.findIndex((p) => p.id === req.params.id);
-  if (index === -1)
-    return res.status(404).json({ message: "Product not found" });
+// app.delete("/api/products/:id", (req, res) => {
+//   const index = products.findIndex((p) => p.id === req.params.id);
+//   if (index === -1)
+//     return res.status(404).json({ message: "Product not found" });
 
-  products.splice(index, 1);
-  saveProductsToFile(res, () =>
-    res.json({ success: true, message: "Product deleted" })
-  );
+//   products.splice(index, 1);
+//   saveProductsToFile(res, () =>
+//     res.json({ success: true, message: "Product deleted" })
+//   );
+// });
+app.delete("/api/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const index = products.findIndex((p) => p.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Remove the product
+    const [deletedProduct] = products.splice(index, 1);
+
+    // Persist changes
+    await saveProducts();
+
+    res.json({
+      success: true,
+      message: "Product deleted",
+      deleted: deletedProduct,
+      remainingCount: products.length,
+    });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({
+      message: "Failed to delete product",
+      error: isLocal ? err.message : undefined,
+    });
+  }
 });
 
 // List files
