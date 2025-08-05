@@ -23,8 +23,14 @@ const getUploadDir = () =>
   isVercel ? "/tmp/uploads" : path.join(__dirname, "uploads");
 const getFilesDir = () =>
   isVercel ? "/tmp/files" : path.join(__dirname, "files");
-const getProductsPath = () =>
-  isVercel ? "/tmp/products.json" : path.join(__dirname, "products.json");
+// In your index.js, modify the data persistence approach:
+const getProductsPath = () => {
+  if (isVercel) {
+    // Use a proper database instead of filesystem
+    return null;
+  }
+  return path.join(__dirname, "products.json");
+};
 
 // Initialize directories (local only)
 if (isLocal) {
@@ -71,20 +77,31 @@ const upload = multer({ storage });
 let products = [];
 
 // Load products with error handling
-try {
-  products = require(getProductsPath());
-} catch (err) {
-  if (err.code === "MODULE_NOT_FOUND") {
-    console.log("No existing products file found, starting with empty array");
-    products = [];
-  } else {
-    console.error("Error loading products:", err);
+if (!isVercel) {
+  try {
+    products = require(getProductsPath());
+  } catch (err) {
+    if (err.code === "MODULE_NOT_FOUND") {
+      console.log("No existing products file found, starting with empty array");
+      products = [];
+    } else {
+      console.error("Error loading products:", err);
+    }
   }
 }
 
 // ======================
 // Route Handlers
 // ======================
+// Add this route to verify your API is reachable
+app.get("/api/test", (req, res) => {
+  res.json({
+    status: "API is working",
+    vercel: isVercel,
+    files: fs.readdirSync("/tmp"), // Check what's in /tmp
+  });
+});
+
 app.get("/", (req, res) => {
   res.json({
     message: "API Server Running",
