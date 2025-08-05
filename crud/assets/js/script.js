@@ -22,15 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
         dropdown.classList.remove("active");
       }
     });
-    // if(dropdownOption && !dropdownOption.contains(e.target))
-    // {
-    //  dropdownOption.classList.remove('active')
-    //  console.log('active removed')
-    // }
-    //  // ALSO close if clicked inside a list item
-    // if (dropdownOption && e.target.closest('.dropdown-option li')) {
-    //   dropdownOption.classList.remove('active');
-    // }
   });
 });
 // Fetch products api
@@ -203,7 +194,6 @@ async function tableListFunc(api, newData) {
   if (!newData) {
     let fetchProduct = await fetchApi(api);
     let fetchRroductRes = await fetchProduct.json();
-    console.log("fetchRroductRes", fetchRroductRes);
     localDataRes = [...fetchRroductRes];
     console.log("localDataRes inside if !newData", fetchRroductRes);
     renderTable(localDataRes);
@@ -215,7 +205,6 @@ async function tableListFunc(api, newData) {
 tableListFunc(productApi);
 
 function renderTable(productList) {
-  console.log("productList on render table", productList);
   const sortedProductList = productList.sort((a, b) => b.id - a.id);
   console.log("sortedProductList", sortedProductList);
   const tableListItem = sortedProductList
@@ -292,7 +281,6 @@ function openModal(id, item) {
   <div id="dialogModal"class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" >
   `;
   if (id) {
-    console.log("id passed on openModal", id);
     let confirmModal = `
       <div class="bg-white p-10 rounded-lg shadow-lg w-[400px] relative border">
         <div class="text-center pb-3">
@@ -360,12 +348,10 @@ function openModal(id, item) {
   }
   dialogueWrapper += `</div>`;
   wrapper.innerHTML = dialogueWrapper;
-  console.log("wrapper", wrapper);
   document.body.appendChild(wrapper.firstElementChild);
 
   let dialogModalBtn = document.getElementById("btnCloseModal");
   let dialogModal = document.getElementById("dialogModal");
-  console.log("dialogModalBtn close", dialogModalBtn);
   if (dialogModalBtn) {
     console.log("if dialogModalBtn close", dialogModalBtn);
     dialogModalBtn.addEventListener("click", function () {
@@ -393,12 +379,10 @@ async function removeData(id) {
     }
     const responseData = await fetchApi(productApi);
     const responseDataRes = await responseData.json();
-    console.log("responseData after delete", responseDataRes);
     // Remove item from the local list
     let localProductList = responseDataRes.filter(
       (product) => product.id !== id
     );
-    console.log("localProductList after filter", localProductList);
     // Re-render table with updated data
     tableListFunc(null, localProductList);
     dialogModal.remove();
