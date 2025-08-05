@@ -8,7 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Serve static files (HTML, CSS, JS, images)
-app.use(express.static(path.join(__dirname, "crud")));
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 // ======================
 // Environment Configuration
@@ -97,20 +98,21 @@ app.get("/", (req, res) => {
 });
 
 // Get all products
-app.get("/products", (req, res) => {
+app.get("/api/products", (req, res) => {
   res.json(products);
 });
 
 // Get single product
-app.get("/products/:id", (req, res) => {
+app.get("/api/products/:id", (req, res) => {
   const product = products.find((p) => p.id === req.params.id);
   if (!product) return res.status(404).json({ message: "Product not found" });
   res.json(product);
 });
 
 // Create new product
-app.post("/products", upload.single("image"), (req, res) => {
+app.post("/api/products", upload.single("image"), (req, res) => {
   const newProduct = req.body;
+  console.log("New product data:", newProduct);
 
   if (!req.file) {
     return res.status(400).json({ message: "Image file is required" });
@@ -121,14 +123,13 @@ app.post("/products", upload.single("image"), (req, res) => {
     : `${req.protocol}://${req.get("host")}`;
 
   newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
-  newProduct.id = (products.length + 1).toString();
 
   products.push(newProduct);
   saveProductsToFile(res, () => res.status(201).json(newProduct));
 });
 
 // Update product
-app.put("/products/:id", upload.single("image"), (req, res) => {
+app.put("/api/products/:id", upload.single("image"), (req, res) => {
   const id = req.params.id;
   if (!id) return res.status(400).json({ message: "Product ID is required" });
 
@@ -152,7 +153,7 @@ app.put("/products/:id", upload.single("image"), (req, res) => {
 });
 
 // Delete product
-app.delete("/products/:id", (req, res) => {
+app.delete("/api/products/:id", (req, res) => {
   const index = products.findIndex((p) => p.id === req.params.id);
   if (index === -1)
     return res.status(404).json({ message: "Product not found" });
@@ -164,7 +165,7 @@ app.delete("/products/:id", (req, res) => {
 });
 
 // List files
-app.get("/files", (req, res) => {
+app.get("/api/files", (req, res) => {
   fs.readdir(getFilesDir(), (err, files) => {
     if (err) {
       return res.status(500).json({

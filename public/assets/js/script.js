@@ -26,26 +26,33 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 // Fetch products api
 // const productApi = "http://localhost:3000/products";
-const productApi = "https://nodeserver-puce-tau.vercel.app/products"; //vercel
+const productApi = "/api/products";
 // const productApi = "https://nodeserver-qidn.onrender.com/products"; // render
 console.log("productApi", productApi);
 // Fetch users api
 const userApi = "https://fakestoreapi.com/users";
 // Fetch api function
 async function fetchApi(api, method = "GET", data = null, headers = {}) {
+  const url = api.startsWith("/api")
+    ? api
+    : `/api${api.startsWith("/") ? api : `/${api}`}`;
+  const options = {
+    method,
+    headers: {
+      ...headers,
+      Accept: "application/json",
+    },
+    credentials: "include", // If using cookies
+  };
+
+  if (data instanceof FormData) {
+    options.body = data;
+  } else if (data) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(data);
+  }
   try {
-    // Handle FormData vs JSON
-    const isFormData = data instanceof FormData;
-    const body = isFormData ? data : data ? JSON.stringify(data) : undefined;
-    const options = {
-      method,
-      headers: {
-        ...(!isFormData && { "Content-Type": "application/json" }),
-        ...headers,
-      },
-      ...(body && { body }),
-    };
-    const response = await fetch(api, options);
+    const response = await fetch(url, options);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -129,9 +136,10 @@ formArea &&
 
     try {
       let response;
-      let apiUrl = productApi;
+      let apiUrl = productApi.startsWith("/api") ? productApi : `/api/products`;
 
       if (isEdit) {
+        console.log("isEdit:", isEdit);
         apiUrl = `${productApi}/${currentEditId}`;
         // For edits, include the existing image URL if no new image was selected
         if (!formData.get("image").size && form.dataset.currentImage) {
@@ -147,9 +155,12 @@ formArea &&
           (acc, cur) => (Number(cur.id) > acc ? Number(cur.id) : acc),
           0
         );
+        console.log("else checkLatestId", checkLatestId);
         const newId = String(Number(checkLatestId) + 1);
-        formData.append("id", newId);
-
+        console.log("newId", newId);
+        // formData.append("id", newId);
+        formData.set("id", newId);
+        console.log("formData after setting id", formData.get("id"));
         response = await fetchApi(apiUrl, "POST", formData);
       }
 
@@ -220,7 +231,9 @@ function renderTable(productList) {
         imageUrl = item.image.url;
       } else if (item.image?.filename) {
         // Case 3: Construct URL from filename
-        imageUrl = `/uploads/${item.image.filename}`;
+        imageUrl = item.image.startsWith("http")
+          ? item.image
+          : `/api/uploads/${item.image.filename}`;
       }
 
       // Verify we got a URL
@@ -368,7 +381,10 @@ async function removeData(id) {
     dialogModal.remove();
     return;
   }
-  const productApWithId = productApi + "/" + id;
+  // const productApWithId = productApi + "/" + id;
+  const productApWithId = `${
+    productApi.startsWith("/api") ? "" : "/api"
+  }/products/${id}`;
   try {
     const fetchProductRes = await fetch(productApWithId, {
       method: "DELETE",
