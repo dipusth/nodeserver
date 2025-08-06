@@ -230,6 +230,7 @@ app.put("/products/:id", upload.single("image"), async (req, res) => {
     };
 
     products[productIndex] = updatedProduct;
+    saveProducts(products);
     await fs.promises.writeFile(
       getProductsPath(),
       JSON.stringify(products, null, 2)
