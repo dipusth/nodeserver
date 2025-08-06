@@ -81,7 +81,7 @@ let products = [];
 
 // Load products with error handling
 try {
-  products = require(getProductsPath());
+  products = getProducts();
 } catch (err) {
   if (err.code === "MODULE_NOT_FOUND") {
     console.log("No existing products file found, starting with empty array");

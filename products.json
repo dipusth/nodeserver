@@ -120,11 +120,11 @@
   {
     "id": "31",
     "title": "Anola Women's African Pink Dress",
-    "price": "2",
+    "price": "20",
     "category": "Jewelery",
     "messages": "Indulge in the romance and charm of our Anola African Print Dress. Anola, meaning 'wealthy family' in Yoruba, will make you feel sophisticated and elegant on any occasion.  With fashion forward details (ruffles and puff-sleeves), this dress will make you feel enchantingly beautiful. Pair with your favorite heels and you're sure to exude timeless allure. ",
     "image": "http://localhost:3000/uploads/1754456213333.jpg",
-    "existingImage": "http://localhost:3000/uploads/1754219872962.webp"
+    "existingImage": "http://localhost:3000/uploads/1754456213333.jpg"
   },
   {
     "title": "fgdg",
