@@ -28,6 +28,8 @@ const getProductsPath = () =>
 // Helper function to read/write products
 const getProducts = () =>
   JSON.parse(fs.readFileSync(path.join(__dirname, "products.json"), "utf8"));
+
+console.log("getProducts:", getProducts());
 const saveProducts = (products) =>
   fs.writeFileSync(
     path.join(__dirname, "products.json"),
@@ -114,7 +116,15 @@ app.get("/products", (req, res) => {
 });
 
 // Get single product
+// app.get("/products/:id", (req, res) => {
+//   const product = products.find((p) => p.id === req.params.id);
+//   if (!product) return res.status(404).json({ message: "Product not found" });
+//   res.json(product);
+// });
+
 app.get("/products/:id", (req, res) => {
+  const products = getProducts(); // Just get the products without sending response
+  console.log("Products loaded:", products);
   const product = products.find((p) => p.id === req.params.id);
   if (!product) return res.status(404).json({ message: "Product not found" });
   res.json(product);
