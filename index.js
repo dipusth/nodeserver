@@ -141,27 +141,81 @@ app.post("/products", upload.single("image"), (req, res) => {
 });
 
 // Update product
+// app.put("/products/:id", upload.single("image"), (req, res) => {
+//   const id = req.params.id;
+//   if (!id) return res.status(400).json({ message: "Product ID is required" });
+
+//   const updatedProduct = req.body;
+//   const baseUrl = isVercel
+//     ? `https://${process.env.VERCEL_URL}`
+//     : `${req.protocol}://${req.get("host")}`;
+
+//   if (req.file) {
+//     updatedProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+//   } else if (updatedProduct.existingImage) {
+//     updatedProduct.image = updatedProduct.existingImage;
+//   }
+
+//   const index = products.findIndex((p) => p.id === id);
+//   if (index === -1)
+//     return res.status(404).json({ message: "Product not found" });
+
+//   products[index] = { ...products[index], ...updatedProduct };
+//   saveProductsToFile(res, () => res.json(products[index]));
+// });
+
 app.put("/products/:id", upload.single("image"), (req, res) => {
-  const id = req.params.id;
-  if (!id) return res.status(400).json({ message: "Product ID is required" });
+  try {
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ message: "Product ID is required" });
 
-  const updatedProduct = req.body;
-  const baseUrl = isVercel
-    ? `https://${process.env.VERCEL_URL}`
-    : `${req.protocol}://${req.get("host")}`;
+    const updatedData = req.body;
+    const products = getProducts();
 
-  if (req.file) {
-    updatedProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
-  } else if (updatedProduct.existingImage) {
-    updatedProduct.image = updatedProduct.existingImage;
+    // Find product index with type-safe comparison
+    const productIndex = products.findIndex((p) => String(p.id) === String(id));
+    if (productIndex === -1) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Prevent ID change
+    if (updatedData.id && String(updatedData.id) !== String(id)) {
+      return res.status(400).json({ message: "Product ID cannot be changed" });
+    }
+
+    // Handle image update
+    const baseUrl = isVercel
+      ? `https://${process.env.VERCEL_URL}`
+      : `${req.protocol}://${req.get("host")}`;
+
+    const imageUpdates = {};
+    if (req.file) {
+      imageUpdates.image = `${baseUrl}/uploads/${req.file.filename}`;
+    } else if (updatedData.existingImage) {
+      imageUpdates.image = updatedData.existingImage;
+    }
+
+    // Merge updates while preserving important fields
+    const updatedProduct = {
+      ...products[productIndex],
+      ...updatedData,
+      ...imageUpdates,
+      id: products[productIndex].id, // Preserve original ID
+    };
+
+    // Update the product
+    products[productIndex] = updatedProduct;
+
+    // Save changes
+    saveProducts(products);
+    res.json(updatedProduct);
+  } catch (err) {
+    console.error("PUT Error:", err);
+    res.status(500).json({
+      error: "Failed to update product",
+      details: isLocal ? err.message : undefined,
+    });
   }
-
-  const index = products.findIndex((p) => p.id === id);
-  if (index === -1)
-    return res.status(404).json({ message: "Product not found" });
-
-  products[index] = { ...products[index], ...updatedProduct };
-  saveProductsToFile(res, () => res.json(products[index]));
 });
 
 // Delete product
