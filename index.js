@@ -311,7 +311,11 @@ app.delete("/products/:id", async (req, res) => {
 
   products.splice(index, 1);
   await saveProducts(products);
-  res.json({ success: true, message: "Product deleted", remainingProducts: products.length // Optional })
+  res.json({
+    success: true,
+    message: "Product deleted",
+    remainingProducts: products.length, // optional
+  });
   // saveProductsToFile(res, () =>
   //   res.json({ success: true, message: "Product deleted" })
   // );
