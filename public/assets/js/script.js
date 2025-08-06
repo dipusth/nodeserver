@@ -124,6 +124,9 @@ formArea &&
     const price = formData.get("price");
     const messages = formData.get("messages");
     const category = formData.get("category");
+    // Fetch products FIRST (regardless of edit/create)
+    const productsResponse = await fetchApi(productApi);
+    const allProducts = await productsResponse.json();
 
     if (!title || !price || !messages || !category) {
       alert("Please enter complete credentials");
@@ -138,17 +141,13 @@ formArea &&
 
     try {
       let response;
-      let apiUrl = productApi;
-
-      if (isEdit) {
-        apiUrl = `${productApi}/${currentEditId}`;
-        // For edits, include the existing image URL if no new image was selected
-        if (!formData.get("image").size && form.dataset.currentImage) {
-          formData.append("existingImage", form.dataset.currentImage);
-        }
-
-        response = await fetchApi(apiUrl, "PUT", formData);
-      } else {
+      const apiUrl = isEdit ? `${productApi}/${currentEditId}` : productApi;
+      console.log("currentEditId before:", currentEditId);
+      // Handle image for edits
+      if (isEdit && !formData.get("image").size && form.dataset.currentImage) {
+        formData.append("existingImage", form.dataset.currentImage);
+      }
+      if (!isEdit) {
         // Generate new ID for new products
         const productListData = await fetchApi(productApi);
         const productListDataRes = await productListData.json();
@@ -156,15 +155,20 @@ formArea &&
           (acc, cur) => (Number(cur.id) > acc ? Number(cur.id) : acc),
           0
         );
+        console.log("checkLatestId:", checkLatestId);
         const newId = String(Number(checkLatestId) + 1);
+        console.log("New ID generated:", newId);
         formData.append("id", newId);
-
-        response = await fetchApi(apiUrl, "POST", formData);
       }
-
+      console.log("apiUrl:", apiUrl);
+      response = await fetchApi(apiUrl, isEdit ? "PUT" : "POST", formData);
       if (!response.ok) throw new Error(response.statusText);
 
       const result = await response.json();
+      // Update UI with the response data directly
+      const updatedData = isEdit
+        ? allProducts.map((item) => (item.id === result.id ? result : item))
+        : [...allProducts, result];
 
       // Show success message
       const para = document.createElement("p");
@@ -173,9 +177,7 @@ formArea &&
       submitResponse.appendChild(para);
 
       // Refresh the product list
-      const fetchProduct = await fetchApi(productApi);
-      const fetchProductRes = await fetchProduct.json();
-      tableListFunc(productApi, fetchProductRes);
+      tableListFunc(productApi, updatedData);
 
       // Reset form and close modal
       setTimeout(() => {

@@ -176,12 +176,11 @@
     "existingImage": "http://localhost:3000/uploads/1754456257059.png"
   },
   {
-    "title": "for put methd large id",
-    "price": "60000",
-    "category": "Jewelery",
-    "messages": "test update for large id updating 60000",
-    "id": "1754477740791",
-    "image": "http://localhost:3000/uploads/1754481563465.webp",
-    "existingImage": "http://localhost:3000/uploads/1754481563465.webp"
+    "title": "last iphone ",
+    "price": "56441",
+    "category": "Men's Clothing",
+    "messages": "iphone ",
+    "id": "33",
+    "image": "http://localhost:3000/uploads/1754488186849.webp"
   }
 ]

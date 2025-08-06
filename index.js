@@ -153,7 +153,7 @@ app.post("/products", upload.single("image"), (req, res) => {
     }
 
     // Generate a unique ID
-    newProduct.id = Date.now().toString();
+    // newProduct.id = Date.now().toString();
 
     const baseUrl = isVercel
       ? `https://${process.env.VERCEL_URL}`
