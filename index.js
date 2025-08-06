@@ -123,21 +123,51 @@ app.get("/products/:id", (req, res) => {
 });
 
 // Create new product
+// app.post("/products", upload.single("image"), (req, res) => {
+//   const newProduct = req.body;
+
+//   if (!req.file) {
+//     return res.status(400).json({ message: "Image file is required" });
+//   }
+
+//   const baseUrl = isVercel
+//     ? `https://${process.env.VERCEL_URL}`
+//     : `${req.protocol}://${req.get("host")}`;
+
+//   newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+
+//   products.push(newProduct);
+//   saveProductsToFile(res, () => res.status(201).json(newProduct));
+// });
 app.post("/products", upload.single("image"), (req, res) => {
-  const newProduct = req.body;
+  try {
+    const newProduct = req.body;
 
-  if (!req.file) {
-    return res.status(400).json({ message: "Image file is required" });
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required" });
+    }
+
+    // Generate a unique ID
+    newProduct.id = Date.now().toString();
+
+    const baseUrl = isVercel
+      ? `https://${process.env.VERCEL_URL}`
+      : `${req.protocol}://${req.get("host")}`;
+
+    newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
+
+    // Check for duplicate ID
+    const products = getProducts();
+    if (products.some((p) => String(p.id) === String(newProduct.id))) {
+      return res.status(400).json({ message: "Generated ID already exists" });
+    }
+
+    products.push(newProduct);
+    saveProducts(products);
+    res.status(201).json(newProduct);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create product" });
   }
-
-  const baseUrl = isVercel
-    ? `https://${process.env.VERCEL_URL}`
-    : `${req.protocol}://${req.get("host")}`;
-
-  newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
-
-  products.push(newProduct);
-  saveProductsToFile(res, () => res.status(201).json(newProduct));
 });
 
 // Update product
