@@ -168,10 +168,11 @@
   },
   {
     "title": "fgdg",
-    "price": "60",
+    "price": "600000",
     "category": "Men's Clothing",
     "messages": "fdgfdgfdg",
     "id": "32",
-    "image": "http://localhost:3000/uploads/1754456257059.png"
+    "image": "http://localhost:3000/uploads/1754456257059.png",
+    "existingImage": "http://localhost:3000/uploads/1754456257059.png"
   }
 ]

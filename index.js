@@ -194,56 +194,53 @@ app.post("/products", upload.single("image"), (req, res) => {
 //   saveProductsToFile(res, () => res.json(products[index]));
 // });
 
-app.put("/products/:id", upload.single("image"), (req, res) => {
+app.put("/products/:id", upload.single("image"), async (req, res) => {
   try {
     const id = req.params.id;
-    if (!id) return res.status(400).json({ message: "Product ID is required" });
+    console.log("Updating product ID:", id); // Debug log
 
-    const updatedData = req.body;
+    if (!id) return res.status(400).json({ message: "Product ID required" });
+
     const products = getProducts();
-
-    // Find product index with type-safe comparison
     const productIndex = products.findIndex((p) => String(p.id) === String(id));
+
     if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Prevent ID change
-    if (updatedData.id && String(updatedData.id) !== String(id)) {
-      return res.status(400).json({ message: "Product ID cannot be changed" });
-    }
+    const updatedData = req.body;
+    console.log("Update payload:", updatedData); // Debug log
 
-    // Handle image update
-    const baseUrl = isVercel
-      ? `https://${process.env.VERCEL_URL}`
-      : `${req.protocol}://${req.get("host")}`;
-
-    const imageUpdates = {};
+    // Handle image upload
+    let imageUrl = products[productIndex].image; // Keep existing image if no new upload
     if (req.file) {
-      imageUpdates.image = `${baseUrl}/uploads/${req.file.filename}`;
-    } else if (updatedData.existingImage) {
-      imageUpdates.image = updatedData.existingImage;
+      const baseUrl = process.env.VERCEL
+        ? `https://${process.env.VERCEL_URL}`
+        : `${req.protocol}://${req.get("host")}`;
+      imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+      console.log("New image URL:", imageUrl); // Debug log
     }
 
-    // Merge updates while preserving important fields
+    // Merge changes
     const updatedProduct = {
       ...products[productIndex],
       ...updatedData,
-      ...imageUpdates,
+      image: imageUrl,
       id: products[productIndex].id, // Preserve original ID
     };
 
-    // Update the product
     products[productIndex] = updatedProduct;
+    await fs.promises.writeFile(
+      getProductsPath(),
+      JSON.stringify(products, null, 2)
+    );
 
-    // Save changes
-    saveProducts(products);
     res.json(updatedProduct);
   } catch (err) {
-    console.error("PUT Error:", err);
+    console.error("PUT Error:", err); // Critical for debugging
     res.status(500).json({
-      error: "Failed to update product",
-      details: isLocal ? err.message : undefined,
+      error: "Update failed",
+      details: process.env.NODE_ENV === "development" ? err.message : null,
     });
   }
 });
