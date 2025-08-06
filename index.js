@@ -30,11 +30,16 @@ const getProducts = () =>
   JSON.parse(fs.readFileSync(path.join(__dirname, "products.json"), "utf8"));
 
 console.log("getProducts:", getProducts());
-const saveProducts = (products) =>
-  fs.writeFileSync(
-    path.join(__dirname, "products.json"),
-    JSON.stringify(products, null, 2)
-  );
+const saveProducts = async (products) => {
+  try {
+    const tempPath = getProductsPath() + ".tmp";
+    await fs.promises.writeFile(tempPath, JSON.stringify(products, null, 2));
+    await fs.promises.rename(tempPath, getProductsPath()); // Atomic replacement
+  } catch (err) {
+    console.error("Failed to save products:", err);
+    throw err; // Let the route handler catch it
+  }
+};
 // Initialize directories (local only)
 if (isLocal) {
   [getUploadDir(), getFilesDir()].forEach((dir) => {
@@ -194,13 +199,65 @@ app.post("/products", upload.single("image"), (req, res) => {
 //   saveProductsToFile(res, () => res.json(products[index]));
 // });
 
+// app.put("/products/:id", upload.single("image"), async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     console.log("Updating product ID:", id); // Debug log
+
+//     if (!id) return res.status(400).json({ message: "Product ID required" });
+
+//     const products = getProducts();
+//     const productIndex = products.findIndex((p) => String(p.id) === String(id));
+
+//     if (productIndex === -1) {
+//       return res.status(404).json({ message: "Product not found" });
+//     }
+
+//     const updatedData = req.body;
+//     console.log("Update payload:", updatedData); // Debug log
+
+//     // Handle image upload
+//     let imageUrl = products[productIndex].image; // Keep existing image if no new upload
+//     if (req.file) {
+//       const baseUrl = process.env.VERCEL
+//         ? `https://${process.env.VERCEL_URL}`
+//         : `${req.protocol}://${req.get("host")}`;
+//       imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+//       console.log("New image URL:", imageUrl); // Debug log
+//     }
+
+//     // Merge changes
+//     const updatedProduct = {
+//       ...products[productIndex],
+//       ...updatedData,
+//       image: imageUrl,
+//       id: products[productIndex].id, // Preserve original ID
+//     };
+
+//     products[productIndex] = updatedProduct;
+//     await saveProducts(products);
+//     await fs.promises.writeFile(
+//       getProductsPath(),
+//       JSON.stringify(products, null, 2)
+//     );
+
+//     res.json(updatedProduct);
+//   } catch (err) {
+//     console.error("PUT Error:", err); // Critical for debugging
+//     res.status(500).json({
+//       error: "Update failed",
+//       details: process.env.NODE_ENV === "development" ? err.message : null,
+//     });
+//   }
+// });
 app.put("/products/:id", upload.single("image"), async (req, res) => {
   try {
     const id = req.params.id;
-    console.log("Updating product ID:", id); // Debug log
+    console.log("Updating product ID:", id);
 
     if (!id) return res.status(400).json({ message: "Product ID required" });
 
+    // Load fresh products data
     const products = getProducts();
     const productIndex = products.findIndex((p) => String(p.id) === String(id));
 
@@ -209,16 +266,16 @@ app.put("/products/:id", upload.single("image"), async (req, res) => {
     }
 
     const updatedData = req.body;
-    console.log("Update payload:", updatedData); // Debug log
+    console.log("Update payload:", updatedData);
 
     // Handle image upload
-    let imageUrl = products[productIndex].image; // Keep existing image if no new upload
+    let imageUrl = products[productIndex].image;
     if (req.file) {
       const baseUrl = process.env.VERCEL
         ? `https://${process.env.VERCEL_URL}`
         : `${req.protocol}://${req.get("host")}`;
       imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
-      console.log("New image URL:", imageUrl); // Debug log
+      console.log("New image URL:", imageUrl);
     }
 
     // Merge changes
@@ -229,16 +286,15 @@ app.put("/products/:id", upload.single("image"), async (req, res) => {
       id: products[productIndex].id, // Preserve original ID
     };
 
+    // Update the products array
     products[productIndex] = updatedProduct;
-    await saveProducts(products);
-    await fs.promises.writeFile(
-      getProductsPath(),
-      JSON.stringify(products, null, 2)
-    );
+
+    // Save changes
+    await saveProducts(products); // Use the synchronous save function consistently
 
     res.json(updatedProduct);
   } catch (err) {
-    console.error("PUT Error:", err); // Critical for debugging
+    console.error("PUT Error:", err);
     res.status(500).json({
       error: "Update failed",
       details: process.env.NODE_ENV === "development" ? err.message : null,
