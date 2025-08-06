@@ -29,7 +29,7 @@ const getProductsPath = () =>
 const getProducts = () =>
   JSON.parse(fs.readFileSync(path.join(__dirname, "products.json"), "utf8"));
 
-console.log("getProducts:", getProducts());
+// console.log("getProducts:", getProducts());
 const saveProducts = async (products) => {
   try {
     const tempPath = getProductsPath() + ".tmp";
@@ -259,6 +259,7 @@ app.put("/products/:id", upload.single("image"), async (req, res) => {
 
     // Load fresh products data
     const products = getProducts();
+    console.log("Current products on put method:", products);
     const productIndex = products.findIndex((p) => String(p.id) === String(id));
 
     if (productIndex === -1) {
@@ -285,10 +286,10 @@ app.put("/products/:id", upload.single("image"), async (req, res) => {
       image: imageUrl,
       id: products[productIndex].id, // Preserve original ID
     };
-
+    console.log("Updated product:", updatedProduct);
     // Update the products array
     products[productIndex] = updatedProduct;
-
+    console.log("Products after update:", products);
     // Save changes
     await saveProducts(products); // Use the synchronous save function consistently
 

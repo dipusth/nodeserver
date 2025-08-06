@@ -200,6 +200,7 @@ formArea &&
 // Create table list function
 async function tableListFunc(api, newData) {
   console.log("newData in tableList func", newData);
+  console.log("api in tableList func", api);
   if (!newData) {
     let fetchProduct = await fetchApi(api);
     let fetchRroductRes = await fetchProduct.json();
