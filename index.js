@@ -310,6 +310,7 @@ app.delete("/products/:id", async (req, res) => {
     return res.status(404).json({ message: "Product not found" });
 
   products.splice(index, 1);
+  console.log("Products after deletion:", products);
   await saveProducts(products);
   res.json({
     success: true,
