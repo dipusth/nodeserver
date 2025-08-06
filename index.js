@@ -30,14 +30,37 @@ const getProducts = () =>
   JSON.parse(fs.readFileSync(path.join(__dirname, "products.json"), "utf8"));
 
 // console.log("getProducts:", getProducts());
+// const saveProducts = async (products) => {
+//   try {
+//     const tempPath = getProductsPath() + ".tmp";
+//     await fs.promises.writeFile(tempPath, JSON.stringify(products, null, 2));
+//     await fs.promises.rename(tempPath, getProductsPath()); // Atomic replacement
+//   } catch (err) {
+//     console.error("Failed to save products:", err);
+//     throw err; // Let the route handler catch it
+//   }
+// };
 const saveProducts = async (products) => {
+  const tempPath = getProductsPath() + ".tmp";
+  const finalPath = getProductsPath();
+
   try {
-    const tempPath = getProductsPath() + ".tmp";
+    // 1. Write to temporary file
     await fs.promises.writeFile(tempPath, JSON.stringify(products, null, 2));
-    await fs.promises.rename(tempPath, getProductsPath()); // Atomic replacement
+
+    // 2. Atomic rename
+    await fs.promises.rename(tempPath, finalPath);
+
+    // 3. Verify write succeeded
+    const fileStats = await fs.promises.stat(finalPath);
+    console.log(`Products saved (${fileStats.size} bytes)`);
   } catch (err) {
-    console.error("Failed to save products:", err);
-    throw err; // Let the route handler catch it
+    console.error("Save failed:", err);
+    // Attempt to restore from backup if exists
+    if (fs.existsSync(finalPath + ".bak")) {
+      await fs.promises.copyFile(finalPath + ".bak", finalPath);
+    }
+    throw err;
   }
 };
 // Initialize directories (local only)
