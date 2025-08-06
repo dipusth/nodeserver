@@ -167,7 +167,7 @@ app.get("/products/:id", (req, res) => {
 //   products.push(newProduct);
 //   saveProductsToFile(res, () => res.status(201).json(newProduct));
 // });
-app.post("/products", upload.single("image"), (req, res) => {
+app.post("/products", upload.single("image"), async (req, res) => {
   try {
     const newProduct = req.body;
 
@@ -191,9 +191,13 @@ app.post("/products", upload.single("image"), (req, res) => {
     }
 
     products.push(newProduct);
-    saveProducts(products);
+    await saveProducts(products);
     res.status(201).json(newProduct);
   } catch (err) {
+    // Clean up uploaded file if error occurred
+    if (req.file) {
+      await fs.promises.unlink(req.file.path).catch(console.error);
+    }
     res.status(500).json({ error: "Failed to create product" });
   }
 });
