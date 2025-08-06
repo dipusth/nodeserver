@@ -311,9 +311,10 @@ app.delete("/products/:id", async (req, res) => {
 
   products.splice(index, 1);
   await saveProducts(products);
-  saveProductsToFile(res, () =>
-    res.json({ success: true, message: "Product deleted" })
-  );
+  res.json({ success: true, message: "Product deleted", remainingProducts: products.length // Optional })
+  // saveProductsToFile(res, () =>
+  //   res.json({ success: true, message: "Product deleted" })
+  // );
 });
 
 // List files
@@ -342,18 +343,18 @@ app.get("/files", (req, res) => {
 // ======================
 // Helper Functions
 // ======================
-const saveProductsToFile = (res, successCallback) => {
-  fs.writeFile(getProductsPath(), JSON.stringify(products, null, 2), (err) => {
-    if (err) {
-      console.error("Save error:", err);
-      return res.status(500).json({
-        message: "Error saving data",
-        error: isLocal ? err.message : undefined,
-      });
-    }
-    successCallback();
-  });
-};
+// const saveProductsToFile = (res, successCallback) => {
+//   fs.writeFile(getProductsPath(), JSON.stringify(products, null, 2), (err) => {
+//     if (err) {
+//       console.error("Save error:", err);
+//       return res.status(500).json({
+//         message: "Error saving data",
+//         error: isLocal ? err.message : undefined,
+//       });
+//     }
+//     successCallback();
+//   });
+// };
 
 // ======================
 // Error Handling
