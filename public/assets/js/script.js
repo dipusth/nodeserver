@@ -1,7 +1,6 @@
 // click on like button
 const iconLike = document.querySelector(".icon-like");
 document.addEventListener("click", function (e) {
-  console.log("e.target", e.target);
   const icon = e.target.closest(".icon-like");
   if (icon) {
     icon.classList.add("active");
@@ -220,7 +219,6 @@ tableListFunc(productApi);
 function renderTable(productList) {
   console.log("productList on render table", productList);
   const sortedProductList = productList.sort((a, b) => b.id - a.id);
-  console.log("sortedProductList", sortedProductList);
   const tableListItem = sortedProductList
     .map((item, i) => {
       // Ensure item.image is a string URL
@@ -401,7 +399,6 @@ async function removeData(id) {
     let localProductList = responseDataRes.filter(
       (product) => product.id !== id
     );
-    console.log("localProductList after filter", localProductList);
     // Re-render table with updated data
     tableListFunc(null, localProductList);
     dialogModal.remove();
