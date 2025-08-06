@@ -304,15 +304,24 @@ app.put("/products/:id", upload.single("image"), async (req, res) => {
 });
 
 // Delete product
-app.delete("/products/:id", (req, res) => {
-  const index = products.findIndex((p) => p.id === req.params.id);
-  if (index === -1)
-    return res.status(404).json({ message: "Product not found" });
+app.delete("/products/:id", async (req, res) => {
+  try {
+    const index = products.findIndex(
+      (p) => String(p.id) === String(req.params.id)
+    );
 
-  products.splice(index, 1);
-  saveProductsToFile(res, () =>
-    res.json({ success: true, message: "Product deleted" })
-  );
+    if (index === -1) return res.status(404).json({ message: "Not found" });
+
+    products.splice(index, 1);
+    await saveProducts(products);
+
+    res.json({
+      success: true,
+      remainingProducts: products, // Return updated list
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Delete failed" });
+  }
 });
 
 // List files
