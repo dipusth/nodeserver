@@ -179,7 +179,9 @@ app.post("/products", upload.single("image"), async (req, res) => {
     // newProduct.id = Date.now().toString();
 
     const baseUrl = isVercel
-      ? `https://${process.env.VERCEL_URL}`
+      ? `https://${
+          process.env.VERCEL_URL || "https://nodeserver-puce-tau.vercel.app"
+        }`
       : `${req.protocol}://${req.get("host")}`;
 
     newProduct.image = `${baseUrl}/uploads/${req.file.filename}`;
