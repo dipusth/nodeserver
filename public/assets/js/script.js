@@ -80,6 +80,7 @@ const btnCloseNew = document.querySelector("#btnCloseNew");
 const formArea = document.querySelector(".form-area");
 const imageInput = document.querySelector("#image");
 btnAddNew.addEventListener("click", function () {
+  console.log("Add New Product button clicked");
   addNewFormModal.classList.remove("hidden");
   formArea.reset();
   formSubmitText.innerText = "Add New Product";
@@ -111,93 +112,123 @@ imageInput.addEventListener("change", () => {
   const file = imageInput.files[0]; // Gets the first selected file
   console.log("Selected file:", file);
 });
-formArea &&
-  formArea.addEventListener("submit", async function (event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    const isEdit = !!currentEditId;
 
-    // Basic validation
-    const title = formData.get("title");
-    const price = formData.get("price");
-    const messages = formData.get("messages");
-    const category = formData.get("category");
-    // Fetch products FIRST (regardless of edit/create)
-    const productsResponse = await fetchApi(productApi);
-    const allProducts = await productsResponse.json();
+// Setup listener
+function setupFormListener() {
+  console.log("Setting up form listener...");
+  if (!formArea) return;
 
-    if (!title || !price || !messages || !category) {
-      alert("Please enter complete credentials");
-      return;
+  // First remove any existing listener
+  formArea.removeEventListener("submit", handleSubmit);
+
+  // Then add the listener
+  formArea.addEventListener("submit", handleSubmit);
+}
+
+// initailize form listener
+setupFormListener();
+async function handleSubmit(event) {
+  console.log("Submit handler triggered");
+  event.preventDefault();
+  event.stopPropagation(); // Stop any parent handlers
+  console.log("Form submitted");
+  const form = event.target;
+  const formData = new FormData(form);
+  const isEdit = !!currentEditId;
+
+  // Basic validation
+  const title = formData.get("title");
+  const price = formData.get("price");
+  const messages = formData.get("messages");
+  const category = formData.get("category");
+  // Fetch products FIRST (regardless of edit/create)
+  const productsResponse = await fetchApi(productApi);
+  const allProducts = await productsResponse.json();
+  let result = [];
+
+  if (!title || !price || !messages || !category) {
+    alert("Please enter complete credentials");
+    return;
+  }
+  if (isNaN(price)) {
+    alert("Please enter valid price");
+    return;
+  }
+
+  formSubmit && formSubmit.classList.add("show");
+
+  try {
+    let response;
+    const apiUrl = isEdit ? `${productApi}/${currentEditId}` : productApi;
+    console.log("currentEditId before:", currentEditId);
+    // Handle image for edits
+    if (isEdit && !formData.get("image").size && form.dataset.currentImage) {
+      formData.append("existingImage", form.dataset.currentImage);
     }
-    if (isNaN(price)) {
-      alert("Please enter valid price");
-      return;
+    if (!isEdit) {
+      console.log("if !isEdit", !isEdit);
+      // Generate new ID for new products
+      const productListData = await fetchApi(productApi);
+      const productListDataRes = await productListData.json();
+      const checkLatestId = productListDataRes.reduce(
+        (acc, cur) => (Number(cur.id) > acc ? Number(cur.id) : acc),
+        0
+      );
+      console.log("checkLatestId:", checkLatestId);
+      const newId = String(Number(checkLatestId) + 1);
+      console.log("New ID generated:", newId);
+      formData.append("id", newId);
     }
+    console.log("apiUrl:", apiUrl);
+    console.log("is updating", isEdit);
+    response = await fetchApi(apiUrl, isEdit ? "PUT" : "POST", formData);
+    if (!response.ok) throw new Error(response.statusText);
 
-    formSubmit && formSubmit.classList.add("show");
+    result = await response.json();
+    // Update UI with the response data directly
+    const updatedData = isEdit
+      ? allProducts.map((item) => (item.id === result.id ? result : item))
+      : [...allProducts, result];
 
-    try {
-      let response;
-      const apiUrl = isEdit ? `${productApi}/${currentEditId}` : productApi;
-      console.log("currentEditId before:", currentEditId);
-      // Handle image for edits
-      if (isEdit && !formData.get("image").size && form.dataset.currentImage) {
-        formData.append("existingImage", form.dataset.currentImage);
-      }
-      if (!isEdit) {
-        // Generate new ID for new products
-        const productListData = await fetchApi(productApi);
-        const productListDataRes = await productListData.json();
-        const checkLatestId = productListDataRes.reduce(
-          (acc, cur) => (Number(cur.id) > acc ? Number(cur.id) : acc),
-          0
-        );
-        console.log("checkLatestId:", checkLatestId);
-        const newId = String(Number(checkLatestId) + 1);
-        console.log("New ID generated:", newId);
-        formData.append("id", newId);
-      }
-      console.log("apiUrl:", apiUrl);
-      response = await fetchApi(apiUrl, isEdit ? "PUT" : "POST", formData);
-      if (!response.ok) throw new Error(response.statusText);
+    // Show success message
+    const para = document.createElement("p");
+    para.innerText = `Product ${isEdit ? "updated" : "created"} successfully`;
+    para.style.color = "green";
+    submitResponse.appendChild(para);
 
-      const result = await response.json();
-      // Update UI with the response data directly
-      const updatedData = isEdit
-        ? allProducts.map((item) => (item.id === result.id ? result : item))
-        : [...allProducts, result];
+    // Refresh the product list
+    tableListFunc(productApi, updatedData);
+    toastify(
+      isEdit ? "Product Updated" : "Product Created",
+      `${
+        isEdit
+          ? `<span class="text-blue-500">${result.title}</span> updated`
+          : "Product created"
+      } successfully`
+    );
+    activeToast();
+    // Reset form and close modal
+    setTimeout(() => {
+      form.reset();
+      currentEditId = null;
+      // formSubmitText.innerText = "Add New Product";
+      // formHeaderTitle.innerText = "Add New Product";
+      para.remove();
+      addNewFormModal.classList.add("hidden");
+      console.log("Resetting form and closing modal");
+    }, 600);
+  } catch (error) {
+    console.error("Error:", error);
+    const para = document.createElement("p");
+    para.innerText = `Error: ${error.message}`;
+    para.style.color = "red";
+    submitResponse.appendChild(para);
+    setTimeout(() => para.remove(), 3000);
+  } finally {
+    formSubmit && formSubmit.classList.remove("show");
+  }
+}
 
-      // Show success message
-      const para = document.createElement("p");
-      para.innerText = `Product ${isEdit ? "updated" : "created"} successfully`;
-      para.style.color = "green";
-      submitResponse.appendChild(para);
-
-      // Refresh the product list
-      tableListFunc(productApi, updatedData);
-
-      // Reset form and close modal
-      setTimeout(() => {
-        form.reset();
-        currentEditId = null;
-        formSubmitText.innerText = "Add New Product";
-        formHeaderTitle.innerText = "Add New Product";
-        para.remove();
-        addNewFormModal.classList.add("hidden");
-      }, 600);
-    } catch (error) {
-      console.error("Error:", error);
-      const para = document.createElement("p");
-      para.innerText = `Error: ${error.message}`;
-      para.style.color = "red";
-      submitResponse.appendChild(para);
-      setTimeout(() => para.remove(), 3000);
-    } finally {
-      formSubmit && formSubmit.classList.remove("show");
-    }
-  });
 // Create table list function
 async function tableListFunc(api, newData) {
   console.log("newData in tableList func", newData);
@@ -420,11 +451,14 @@ async function updateProduct(id, data) {
   updatingForm(result);
   // Method to Update form elemet
   function updatingForm(result) {
-    if (!result) return;
+    let addNewFormModal = document.querySelector("#addNewFormModal");
     console.log("updatingForm called with result:", result);
+    if (!result) return;
+    console.log("updatingForm if result:", result);
     formSubmitText.innerText = "Update";
     formHeaderTitle.innerText = "Update Form";
     addNewFormModal.classList.remove("hidden");
+    console.log("addNewFormModal class removed", addNewFormModal);
     // Set form values
     document.getElementsByName("title")[0].value = result.title;
     document.getElementsByName("price")[0].value = result.price;
@@ -443,5 +477,49 @@ async function updateProduct(id, data) {
     if (result.image) {
       formArea.dataset.currentImage = result.image;
     }
+  }
+}
+
+function toastify(status, text) {
+  console.log("toastify called with status:", status, "text:", text);
+  const toastWrapper = document.querySelector(".toast-wrapper");
+  const toast = `
+       <div class="toast">
+        <div class="toast-content">
+          <i class="fas fa-solid fa-check check"></i>
+          <div class="message">
+            <h4 class="text-7 font-bold">${status}</h4>
+            <p>${text}</p>
+          </div>
+        </div>
+        <i class="fa-solid fa-xmark close" onClick="closeToast()"></i>
+        <div class="progress active"></div>
+      </div>
+    `;
+  if (toastWrapper) {
+    toastWrapper.innerHTML = ""; // Clear previous toasts
+    toastWrapper.innerHTML += toast;
+  }
+}
+function closeToast() {
+  const toast = document.querySelector(".toast");
+  const progress = document.querySelector(".progress");
+  toast.classList.remove("active");
+  progress.classList.remove("active");
+}
+
+function activeToast() {
+  const toast = document.querySelector(".toast");
+  const progress = document.querySelector(".progress");
+  console.log("activeToast called, toast:", toast, "progress:", progress);
+  if (toast) {
+    setTimeout(() => {
+      toast.classList.add("active");
+      progress.classList.add("active");
+    }, 1000);
+    setTimeout(() => {
+      toast.classList.remove("active");
+      progress.classList.remove("active");
+    }, 5000);
   }
 }

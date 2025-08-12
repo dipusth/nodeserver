@@ -74,6 +74,83 @@ table {
   }
 }
 
+/* Toast */
+.toast{
+  position: absolute;
+  top: 25px;
+  right: 30px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 20px 35px 20px 25px;
+  box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transform: translateX(calc(100% + 30px ));
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+  &.active {
+   transform: translateX(0%);
+  }
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    padding: 5px;
+    cursor: pointer;
+    opacity: 0.7;
+    &:hover{
+      opacity: 1;
+    }
+  }
+
+  .toast-content{
+    display: flex;
+    gap: 1.25rem;
+    justify-items: space-between;
+    .check {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 35px;
+      min-width: 35px;
+      background-color: #4070f4;
+      color: #fff;
+      font-size: 20px;
+      border-radius: 50%;
+    }
+    .message {
+      display: flex;
+      flex-direction: column;
+      margin: 0 20px;
+      .text {
+        font-size: 16px;
+        font-weight: 400;
+        color: #666666;
+        &.text-1 {
+          font-weight: 600;
+          color: #333;
+        }
+      }
+    }
+  }
+  .progress{
+    position: absolute;
+    height: 3px;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--blue);
+    &::before{
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      height: 100%;
+      width: 100%;
+      background-color: #4070f4;
+    }
+    &.active:before{
+      animation:  progress 5s linear forwards;
+    }
+  }
+}
 .table-responsive {
   color: var(--table);
   width: 100%;
@@ -102,6 +179,9 @@ table {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+.text-primary{
+  color: var(--primary);
 }
 
 .link {
