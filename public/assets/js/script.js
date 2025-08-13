@@ -66,7 +66,6 @@ const imageInput = document.querySelector("#image");
 
 //Add New Product button click event
 btnAddNew.addEventListener("click", function () {
-  console.log("Add New Product button clicked");
   addNewFormModal.classList.remove("hidden");
   formArea.reset();
   formSubmitText.innerText = "Add New Product";
