@@ -59,13 +59,12 @@
               class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden"
             >
               <div class="bg-white p-6 rounded-lg shadow-lg w-[40%] relative border">
-                <div class="text-center pb-3">
+                <div class="text-center pb-3 mb-4">
                   <h2 class="text-3 font-bold text-center" id="head-title">Add New Product</h2>
-                  <p>
-                    Handling<span class="text-red-500 ml-1 font-bold"
-                      >{Error}</span
-                    >
-                    on Form Submit
+                  <p class="text-slate-400">
+                    Please fill in the details below.
+                    <!-- <span class="text-red-500 font-medium"
+                      >* All fields are required</span> -->
                   </p>
                 </div>
                 <form
@@ -77,12 +76,13 @@
                       <label
                         for="title"
                         class="block text-sm/6 font-medium text-gray-900"
-                        >Title</label
+                        >Title<span class="ml-1 text-red-500">*</span></label
                       >
                       <div class="mt-2">
                         <input
                           type="text"
                           name="title"
+                          placeholder="Product Title"
                           id="title"
                           autocomplete="given-name"
                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -93,12 +93,13 @@
                       <label
                         for="price"
                         class="block text-sm/6 font-medium text-gray-900"
-                        >Price</label
+                        >Price<span class="ml-1 text-red-500">*</span></label
                       >
                       <div class="mt-2">
                         <input
                           type="text"
                           name="price"
+                          placeholder="Add a Price"
                           id="price"
                           autocomplete="given-name"
                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -111,17 +112,23 @@
                     <label
                       for="category"
                       class="block text-sm/6 font-medium text-gray-900"
-                      >Category</label
+                      >Category<span class="ml-1 text-red-500">*</span></label
                     >
                     <div class="mt-2 grid grid-cols-1">
                       <select
                         id="category"
                         name="category"
-                        class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 border focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-400 border focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                       >
                         <option>Men's Clothing</option>
                         <option>Women's Clothing</option>
                         <option>Jewelery</option>
+                        <option>Electronics</option>
+                        <option>Cosmetics</option>
+                        <option>Kid's Clothing</option>
+                        <option>Toys</option>
+                        <option>Gift Item</option>
+                        <option>Others</option>
                       </select>
                       <svg
                         class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
@@ -141,8 +148,8 @@
                   <div class="sm:col-span-3">
                     <label
                       for="image"
-                      class="block text-sm/6 font-medium text-gray-900"
-                      >Upload Image</label
+                      class="block text-sm/6 font-medium text-gray-900 pb-2"
+                      >Upload Image<span class="ml-1 text-red-500">*</span></label
                     >
                     <input
                       type="file"
@@ -155,7 +162,7 @@
                     <label
                       for="messages"
                       class="block text-sm/6 font-medium text-gray-900"
-                      >messages</label
+                      >Description<span class="ml-1 text-red-500">*</span></label
                     >
                     <textarea
                       id="messages"
@@ -164,6 +171,8 @@
                       class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Description..."
                     ></textarea>
+                    <p class="text-slate-400 font-medium pt-3"
+                      ><small class="mr-1 text-red-500">*</small> All fields are required</p>
                   </div>
                   <div class="submit-response"></div>
                   <button

@@ -138,21 +138,11 @@
     "image": "http://localhost:3000/uploads/1754409222993.png"
   },
   {
-    "title": "check poduct updating online",
-    "price": "1000",
+    "title": "retret",
+    "price": "50",
     "category": "Jewelery",
-    "messages": "2nd item updating",
+    "messages": "retret",
     "id": "32",
-    "image": "http://localhost:3000/uploads/1754879456744.png",
-    "existingImage": "http://localhost:3000/uploads/1754879456744.png"
-  },
-  {
-    "title": "last iphone - 20",
-    "price": "25000",
-    "category": "Jewelery",
-    "messages": "iphone  19 updating ",
-    "id": "33",
-    "image": "http://localhost:3000/uploads/1754892745225.webp",
-    "existingImage": "http://localhost:3000/uploads/1754892745225.webp"
+    "image": "http://localhost:3000/uploads/1755082138475.png"
   }
 ]

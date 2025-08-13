@@ -7,38 +7,23 @@ document.addEventListener("click", function (e) {
   }
 });
 document.addEventListener("DOMContentLoaded", function () {
-  // const dropdown = document.querySelector('.dropdown-option');
-  // const toggleBtn = document.getElementById('dropdownToggle');
-
+  // Removing active class from dropdown options except clicked one
   document.addEventListener("click", function (e) {
     let dropdownOptions = document.querySelectorAll(".dropdown-option");
-
     dropdownOptions.forEach((dropdown) => {
       const targetClass = e.target.closest(".dropdown-option");
       const targetContains = dropdown.contains(e.target);
-      // const targetIsActive = dropdown.hasClass('active');
       if (!targetClass || !targetContains) {
         dropdown.classList.remove("active");
       }
     });
-    // if(dropdownOption && !dropdownOption.contains(e.target))
-    // {
-    //  dropdownOption.classList.remove('active')
-    //  console.log('active removed')
-    // }
-    //  // ALSO close if clicked inside a list item
-    // if (dropdownOption && e.target.closest('.dropdown-option li')) {
-    //   dropdownOption.classList.remove('active');
-    // }
   });
 });
 // Fetch products api
 const productApi = "/products";
 // const productApi = "https://nodeserver-puce-tau.vercel.app/products"; //vercel
 // const productApi = "https://nodeserver-qidn.onrender.com/products"; // render
-console.log("productApi", productApi);
-// Fetch users api
-const userApi = "https://fakestoreapi.com/users";
+
 // Fetch api function
 async function fetchApi(api, method = "GET", data = null, headers = {}) {
   try {
@@ -65,7 +50,6 @@ async function fetchApi(api, method = "GET", data = null, headers = {}) {
 }
 
 // form submit
-
 const submitResponse = document.querySelector(".submit-response");
 let tableList = document.querySelector(".table-list");
 let formSubmit = document.getElementById("productformSubmit");
@@ -79,6 +63,8 @@ const addNewFormModal = document.querySelector("#addNewFormModal");
 const btnCloseNew = document.querySelector("#btnCloseNew");
 const formArea = document.querySelector(".form-area");
 const imageInput = document.querySelector("#image");
+
+//Add New Product button click event
 btnAddNew.addEventListener("click", function () {
   console.log("Add New Product button clicked");
   addNewFormModal.classList.remove("hidden");
@@ -89,6 +75,7 @@ btnAddNew.addEventListener("click", function () {
     addNewFormModal.classList.add("delay");
   });
 });
+// Close Add New Product modal
 btnCloseNew.addEventListener("click", function () {
   addNewFormModal.classList.remove("delay");
   setTimeout(() => {
@@ -96,7 +83,7 @@ btnCloseNew.addEventListener("click", function () {
   }, 60);
 });
 
-// Click Action Function
+// Click Action Function for dropdown menu
 function actionMenu(clickedAction) {
   const dropdownOption = document.querySelectorAll(".dropdown-option");
   dropdownOption.forEach((item) => {
@@ -106,13 +93,8 @@ function actionMenu(clickedAction) {
   });
   clickedAction.classList.toggle("active");
 }
-let currentEditId = null; // track if we're editing an existing product
 
-imageInput.addEventListener("change", () => {
-  const file = imageInput.files[0]; // Gets the first selected file
-  console.log("Selected file:", file);
-});
-
+let currentEditId = null; // tracking if editing an existing product
 // Setup listener
 function setupFormListener() {
   console.log("Setting up form listener...");
@@ -131,7 +113,6 @@ async function handleSubmit(event) {
   console.log("Submit handler triggered");
   event.preventDefault();
   event.stopPropagation(); // Stop any parent handlers
-  console.log("Form submitted");
   const form = event.target;
   const formData = new FormData(form);
   const isEdit = !!currentEditId;
@@ -141,17 +122,26 @@ async function handleSubmit(event) {
   const price = formData.get("price");
   const messages = formData.get("messages");
   const category = formData.get("category");
-  // Fetch products FIRST (regardless of edit/create)
+  const images = formData.get("image");
+
+  // Fetching products first
   const productsResponse = await fetchApi(productApi);
   const allProducts = await productsResponse.json();
   let result = [];
 
   if (!title || !price || !messages || !category) {
-    alert("Please enter complete credentials");
+    toastify("Error", "Please enter complete credentials");
+    activeToast();
     return;
   }
   if (isNaN(price)) {
-    alert("Please enter valid price");
+    toastify("Error", "Please enter valid price");
+    activeToast();
+    return;
+  }
+  if (images.size <= 0 && !form.dataset.currentImage) {
+    toastify("Error", "Please upload an image");
+    activeToast();
     return;
   }
 
@@ -174,18 +164,14 @@ async function handleSubmit(event) {
         (acc, cur) => (Number(cur.id) > acc ? Number(cur.id) : acc),
         0
       );
-      console.log("checkLatestId:", checkLatestId);
       const newId = String(Number(checkLatestId) + 1);
-      console.log("New ID generated:", newId);
       formData.append("id", newId);
     }
-    console.log("apiUrl:", apiUrl);
-    console.log("is updating", isEdit);
     response = await fetchApi(apiUrl, isEdit ? "PUT" : "POST", formData);
     if (!response.ok) throw new Error(response.statusText);
 
     result = await response.json();
-    // Update UI with the response data directly
+    // Updating UI with the response data directly
     const updatedData = isEdit
       ? allProducts.map((item) => (item.id === result.id ? result : item))
       : [...allProducts, result];
@@ -199,8 +185,8 @@ async function handleSubmit(event) {
     // Refresh the product list
     tableListFunc(productApi, updatedData);
     toastify(
-      isEdit ? "Updated" : "Created",
-      `<span class="font-semibold">${result.title}</span> ${
+      isEdit ? "Product Updated" : "Product Created",
+      `<span class="font-semibold">${toTitleCase(result.title)}</span> ${
         isEdit ? "updated" : "created"
       } successfully`
     );
@@ -209,11 +195,8 @@ async function handleSubmit(event) {
     setTimeout(() => {
       form.reset();
       currentEditId = null;
-      // formSubmitText.innerText = "Add New Product";
-      // formHeaderTitle.innerText = "Add New Product";
       para.remove();
       addNewFormModal.classList.add("hidden");
-      console.log("Resetting form and closing modal");
     }, 600);
   } catch (error) {
     console.error("Error:", error);
@@ -229,24 +212,18 @@ async function handleSubmit(event) {
 
 // Create table list function
 async function tableListFunc(api, newData) {
-  console.log("newData in tableList func", newData);
-  console.log("api in tableList func", api);
   if (!newData) {
     let fetchProduct = await fetchApi(api);
     let fetchRroductRes = await fetchProduct.json();
-    console.log("fetchRroductRes", fetchRroductRes);
     localDataRes = [...fetchRroductRes];
-    console.log("localDataRes inside if !newData", fetchRroductRes);
     renderTable(localDataRes);
   } else {
-    console.log("newData inside if data not fetched", newData);
     renderTable(newData);
   }
 }
 tableListFunc(productApi);
 
 function renderTable(productList) {
-  console.log("productList on render table", productList);
   const sortedProductList = productList.sort((a, b) => b.id - a.id);
   const tableListItem = sortedProductList
     .map((item, i) => {
@@ -316,13 +293,11 @@ function toTitleCase(str) {
 
 // Dialogue box modal function
 function openModal(id, item) {
-  console.log("open dialogue box id", id, item);
   const wrapper = document.createElement("div");
   let dialogueWrapper = `
   <div id="dialogModal"class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" >
   `;
   if (id) {
-    console.log("id passed on openModal", id);
     let confirmModal = `
       <div class="bg-white p-10 rounded-lg shadow-lg w-[400px] relative border">
         <div class="text-center pb-3">
@@ -345,7 +320,6 @@ function openModal(id, item) {
     dialogueWrapper += confirmModal;
   }
   if (item) {
-    console.log("item passed on openModal", item);
     let cardModal = `
         <div class="card max-w-[400px] min-w-[300px] flex flex-col p-5 rounded-lg justify-between">
           <div class="card-inner border-2 w-full item-center p-5 border-gray-300 rounded-[20px] overflow mb-4">
@@ -390,14 +364,11 @@ function openModal(id, item) {
   }
   dialogueWrapper += `</div>`;
   wrapper.innerHTML = dialogueWrapper;
-  console.log("wrapper", wrapper);
   document.body.appendChild(wrapper.firstElementChild);
 
   let dialogModalBtn = document.getElementById("btnCloseModal");
   let dialogModal = document.getElementById("dialogModal");
-  console.log("dialogModalBtn close", dialogModalBtn);
   if (dialogModalBtn) {
-    console.log("if dialogModalBtn close", dialogModalBtn);
     dialogModalBtn.addEventListener("click", function () {
       dialogModal.remove();
     });
@@ -423,7 +394,6 @@ async function removeData(id) {
     }
     const responseData = await fetchApi(productApi);
     const responseDataRes = await responseData.json();
-    console.log("responseData after delete", responseDataRes);
     // Remove item from the local list
     let localProductList = responseDataRes.filter(
       (product) => product.id !== id
@@ -431,7 +401,10 @@ async function removeData(id) {
     // Re-render table with updated data
     tableListFunc(null, localProductList);
     dialogModal.remove();
-    toastify("Deleted", `Product with ID ${id} deleted successfully`);
+    toastify(
+      "Deleted",
+      `Product with ID <span class="font-bold">${id}</span> deleted successfully`
+    );
     activeToast();
   } catch (err) {
     console.error(err.message);
@@ -454,11 +427,10 @@ async function updateProduct(id, data) {
     let addNewFormModal = document.querySelector("#addNewFormModal");
     console.log("updatingForm called with result:", result);
     if (!result) return;
-    console.log("updatingForm if result:", result);
     formSubmitText.innerText = "Update";
     formHeaderTitle.innerText = "Update Form";
     addNewFormModal.classList.remove("hidden");
-    console.log("addNewFormModal class removed", addNewFormModal);
+
     // Set form values
     document.getElementsByName("title")[0].value = result.title;
     document.getElementsByName("price")[0].value = result.price;
@@ -481,18 +453,25 @@ async function updateProduct(id, data) {
 }
 
 function toastify(status, text) {
-  console.log("toastify called with status:", status, "text:", text);
   const toastWrapper = document.querySelector(".toast-wrapper");
+  let icon = `fa-check`;
+  let bgColor = `bg-green-500`;
+  if (status == "Deleted") {
+    icon = `fa-trash-can`;
+    bgColor = `bg-red-500`;
+    console.log("Deleted in toastify");
+  } else if (status == "Error") {
+    icon = `fa-xmark`;
+    bgColor = `bg-red-500`;
+  }
   const toast = `
        <div class="toast">
         <div class="toast-content">
-        ${
-          status === "Deleted"
-            ? ` <i class="fas fa-solid fa-trash-can check bg-red-500"></i>`
-            : ` <i class="fas fa-solid fa-check check bg-green-500"></i>`
-        }
+          <i class="fas fa-solid ${icon} check ${bgColor}"></i>
           <div class="message text-slate-500">
-            <h4 class="text-7 font-bold">Product ${status}</h4>
+            <h4 class="${
+              status == "Error" || status == "Delete" ? "text-red-500" : ""
+            } text-7 font-bold">${status}</h4>
             <p>${text}</p>
           </div>
         </div>
@@ -515,7 +494,6 @@ function closeToast() {
 function activeToast() {
   const toast = document.querySelector(".toast");
   const progress = document.querySelector(".progress");
-  console.log("activeToast called, toast:", toast, "progress:", progress);
   if (toast) {
     setTimeout(() => {
       toast.classList.add("active");
