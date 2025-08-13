@@ -199,11 +199,9 @@ async function handleSubmit(event) {
     // Refresh the product list
     tableListFunc(productApi, updatedData);
     toastify(
-      isEdit ? "Product Updated" : "Product Created",
-      `${
-        isEdit
-          ? `<span class="text-blue-500">${result.title}</span> updated`
-          : "Product created"
+      isEdit ? "Updated" : "Created",
+      `<span class="font-semibold">${result.title}</span> ${
+        isEdit ? "updated" : "created"
       } successfully`
     );
     activeToast();
@@ -433,6 +431,8 @@ async function removeData(id) {
     // Re-render table with updated data
     tableListFunc(null, localProductList);
     dialogModal.remove();
+    toastify("Deleted", `Product with ID ${id} deleted successfully`);
+    activeToast();
   } catch (err) {
     console.error(err.message);
     alert(err.message);
@@ -486,9 +486,13 @@ function toastify(status, text) {
   const toast = `
        <div class="toast">
         <div class="toast-content">
-          <i class="fas fa-solid fa-check check"></i>
-          <div class="message">
-            <h4 class="text-7 font-bold">${status}</h4>
+        ${
+          status === "Deleted"
+            ? ` <i class="fas fa-solid fa-trash-can check bg-red-500"></i>`
+            : ` <i class="fas fa-solid fa-check check bg-green-500"></i>`
+        }
+          <div class="message text-slate-500">
+            <h4 class="text-7 font-bold">Product ${status}</h4>
             <p>${text}</p>
           </div>
         </div>
@@ -516,10 +520,12 @@ function activeToast() {
     setTimeout(() => {
       toast.classList.add("active");
       progress.classList.add("active");
-    }, 1000);
+    }, 600);
     setTimeout(() => {
       toast.classList.remove("active");
+    }, 5300);
+    setTimeout(() => {
       progress.classList.remove("active");
-    }, 5000);
+    }, 5900);
   }
 }

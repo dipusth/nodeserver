@@ -9,16 +9,6 @@
     "messages": "gift item updasted"
   },
   {
-    "id": "8",
-    "title": "last added product",
-    "price": "600",
-    "description": "dfdfdf",
-    "category": "Men's Clothing",
-    "image": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg",
-    "messages": "updating",
-    "existingImage": "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
-  },
-  {
     "id": "13",
     "title": "product 13",
     "price": "800",
@@ -35,25 +25,6 @@
     "category": "Men's Clothing",
     "image": "http://localhost:3000/uploads/1754309775516.webp",
     "messages": "undefined updates"
-  },
-  {
-    "id": "17",
-    "title": "vercel app",
-    "price": "10",
-    "description": "dfdfdf",
-    "category": "Men's Clothing",
-    "image": "http://localhost:3000/uploads/1754309879021.jpg",
-    "messages": "fsdgjgjpfg",
-    "existingImage": "http://localhost:3000/uploads/1754309879021.jpg"
-  },
-  {
-    "id": "19",
-    "title": "cvcv 19",
-    "price": "5000",
-    "category": "Jewelery",
-    "descriptions": "cvcv",
-    "image": "http://localhost:3000/uploads/1754291273866.jpg",
-    "messages": "cvcv 19 updated"
   },
   {
     "id": "20",
@@ -177,19 +148,11 @@
   },
   {
     "title": "last iphone - 20",
-    "price": "2500",
+    "price": "25000",
     "category": "Jewelery",
     "messages": "iphone  19 updating ",
     "id": "33",
     "image": "http://localhost:3000/uploads/1754892745225.webp",
     "existingImage": "http://localhost:3000/uploads/1754892745225.webp"
-  },
-  {
-    "title": "jkj",
-    "price": "60",
-    "category": "Men's Clothing",
-    "messages": "jkjkj",
-    "id": "34",
-    "image": "http://localhost:3000/uploads/1755002823012.png"
   }
 ]

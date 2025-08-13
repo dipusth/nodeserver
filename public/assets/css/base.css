@@ -111,7 +111,6 @@ table {
       justify-content: center;
       height: 35px;
       min-width: 35px;
-      background-color: #4070f4;
       color: #fff;
       font-size: 20px;
       border-radius: 50%;
@@ -136,7 +135,7 @@ table {
     height: 3px;
     bottom: 0;
     width: 100%;
-    background-color: var(--blue);
+    left: 0;
     &::before{
       content: "";
       position: absolute;
@@ -147,7 +146,7 @@ table {
       background-color: #4070f4;
     }
     &.active:before{
-      animation:  progress 5s linear forwards;
+      animation: progress 5s linear forwards;
     }
   }
 }
@@ -589,3 +588,9 @@ table {
     <input type="radio" id="starhalf" name="rating" value="half" /><label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
 </fieldset> */
 
+/* keyframes */
+@keyframes progress {
+  100% {
+    right: 100%;
+  }
+}
