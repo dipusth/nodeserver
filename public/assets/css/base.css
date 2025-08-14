@@ -13,6 +13,9 @@ body {
 h1,h2,h3,h4,h5{
   color: #364A63 ;
 }
+p{
+  color: #a1b1c8;
+}
 .container {
   margin: 0 auto;
   padding: 0 0.9375rem;
@@ -70,6 +73,18 @@ table {
     img {
       height: 4.375rem
       /* margin: 0 auto; */
+    }
+  }
+}
+/* search bar */
+.search-bar{
+  &:focus-within{
+    border: 1px solid var(--blue );
+  }
+  input{
+    &:focus, &:focus-visible{
+      border: none;
+      outline: none;
     }
   }
 }

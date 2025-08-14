@@ -215,19 +215,21 @@ async function tableListFunc(api, newData) {
     let fetchProduct = await fetchApi(api);
     let fetchRroductRes = await fetchProduct.json();
     localDataRes = [...fetchRroductRes];
-    renderTable(localDataRes);
+    renderTable(localDataRes, false);
   } else {
-    renderTable(newData);
+    renderTable(newData, false);
   }
 }
 tableListFunc(productApi);
 
-function renderTable(productList) {
+function renderTable(productList, sortStatus) {
   const sortedProductList = productList.sort((a, b) => b.id - a.id);
+  const acendingProductList = productList.sort((a, b) => a.id - b.id);
+  console.log("productList:", productList);
+  console.log("acendingProductList:", acendingProductList);
+  // const newProductList = sortStatus ? acendingProductList : sortedProductList;
   const tableListItem = sortedProductList
     .map((item, i) => {
-      // Ensure item.image is a string URL
-      // Extract image URL - handles multiple cases
       let imageUrl = "";
       if (typeof item.image === "string") {
         // Case 1: Direct URL string
@@ -292,6 +294,7 @@ function toTitleCase(str) {
 
 // Dialogue box modal function
 function openModal(id, item) {
+  console.group("openModal called with id:", id, "item:", item);
   const wrapper = document.createElement("div");
   let dialogueWrapper = `
   <div id="dialogModal"class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" >
@@ -302,8 +305,8 @@ function openModal(id, item) {
         <div class="text-center pb-3">
           <h4 class="text-5 font-bold text-center" id="head-title">Are you sure want to Delete?</h4>
           <div class="flex justify-between gap-4 mt-6">
-            <button class="btn p-3 border-slate-400 border-2 border-solid text-slate-400" id="modal-cancel" onclick='removeData()'><i class="fa-solid fa-ban mr-2"></i>Cancel</button>
-            <button class="btn p-3 bg-red-500 text-white" id="modal-remove" onclick='removeData(${id})'><i class="fa-regular fa-trash-can mr-2"></i>Delete</button>
+            <button class="btn p-3 border-slate-400 border-2 border-solid text-slate-400" id="modal-cancel" onclick='removeItem()'><i class="fa-solid fa-ban mr-2"></i>Cancel</button>
+            <button class="btn p-3 bg-red-500 text-white" id="modal-remove" onclick='removeItem(${id})'><i class="fa-regular fa-trash-can mr-2"></i>Delete</button>
           </div>
         </div>
         <button
@@ -341,14 +344,18 @@ function openModal(id, item) {
               </span>
           </div>
           <div class="card-info">
-            <h4 class="font-bold text-6">
-              ${item.title}
+            <h4 class="font-medium text-7">
+              ${toTitleCase(item.title)}
             </h4>
             <div class='flex justify-between items-center my-2'>
-            <span class="price-tag font-bold text-slate-800 text-lg">$${item.price}</span>
+            <span class="price-tag font-bold text-slate-800 text-lg">$${
+              item.price
+            }</span>
             <small class="block text-gray-500">${item.category}</small>
             </div>
-            <button class="bg-primary py-2 px-3 rounded-lg w-full"><i class="fa-solid fa-cart-shopping mr-3"></i>Add to Cart</button>
+            <button onclick='removeItem(${
+              item.id
+            })' class="bg-red-500 py-2 px-3 rounded-lg w-full"><i class="fa-solid fa-trash-can mr-3"></i>Delete</button>
           </div>
           <button
             type="button"
@@ -374,8 +381,8 @@ function openModal(id, item) {
   }
 }
 // Delete list after clicking remove on dialog
-async function removeData(id) {
-  console.log("removeData called with id:", id);
+async function removeItem(id) {
+  console.log("removeItem called with id:", id);
   const dialogModal = document.getElementById("dialogModal");
   if (!id) {
     console.log("canceled");
@@ -505,4 +512,37 @@ function activeToast() {
       progress.classList.remove("active");
     }, 5900);
   }
+}
+
+// Search function
+const searchInput = document.getElementById("searchInput");
+if (searchInput) {
+  searchInput.addEventListener("input", debounce(searchFilter, 500));
+}
+function searchFilter() {
+  console.log("searching...", searchInput.value);
+  const filteredProducts = localDataRes.filter((item) => {
+    console.log("Filtering item:", item);
+    return item.title.toLowerCase().includes(searchInput.value.toLowerCase());
+  });
+  console.log("Filtered Products:", filteredProducts);
+  tableListFunc(productApi, filteredProducts);
+}
+function debounce(func, delay) {
+  let timeOut;
+  return function (...args) {
+    clearTimeout(timeOut);
+    timeOut = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+let sortStatus = false;
+async function sortTable() {
+  const responseData = await fetchApi(productApi);
+  const responseDataRes = await responseData.json();
+  sortStatus = !sortStatus;
+  console.log("sortStatus:", sortStatus);
+  console.log("responseDataRes:", responseDataRes);
+  renderTable(responseDataRes, sortStatus);
 }

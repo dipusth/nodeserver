@@ -10,9 +10,13 @@
       href="https://fakestoreapi.com/favicon-32x32.png"
     />
     <title>CRUD - operation with error handling</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">     <link
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
@@ -43,168 +47,190 @@
   <body>
     <div class="container wrapper p-6 lg:p-6">
       <div class="flex justify-center">
-         <h1 class="text-3 text-primary">Nodejs CRUD App</h1>
+        <h1 class="text-3 text-gray-700">
+          Nodejs<span class="font-bold ml-2">CRUD</span> App
+        </h1>
       </div>
       <div class="mt-8 gap-4">
         <div class="table-responsive rounded-lg">
-          <div class="flex items-center justify-between py-3">
+          <div class="lg:flex items-center justify-between py-3">
             <div>
-              <h4 class="text-5 font-bold">Product List Table</h4>
-              <p>New product can be<span class="text-blue-500 font-medium mx-1">added</span>,<span class="text-yellow-500 font-medium mx-1">updated</span>and<span class="text-red-500 font-medium mx-1">deleted</span> from the list</p>
+              <h4 class="text-5 font-medium">Product List Table</h4>
+              <p>
+                New products can be <b>added, updated and deleted</b> from the
+                list
+              </p>
             </div>
+            <div class="flex">
+              <!-- Search Filter -->
+               <div class="search-bar w-[55%] flex-auto bg-white rounded-md flex items-center mr-3 pl-3 border">
 
-            <!-- Modal -->
+                 <button type="button" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                 <input
+                   type="text"
+                   id="searchInput"
+                   placeholder="Search by title..."
+                   class="px-4 py-2 md:w-64 rounded-md"
+                 >
+               </div>
+               <!-- Sorting -->
+                <button class="rounded-md border p-3 mr-3" onclick="sortTable()"><i class="fa-solid fa-sort pr-2"></i>Sort</button>
+              <!-- Button -->
+              <button
+                type="button"
+                id="btnAddNew"
+                class="px-4 py-2 bg-blue-600 text-white rounded min-w-28"
+              >
+                <i class="fa-solid fa-plus"></i>
+                <span class="ml-1">Add New</span>
+              </button>
+            </div>
+          </div>
+          <!-- Modal -->
+          <div
+            id="addNewFormModal"
+            class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden"
+          >
             <div
-              id="addNewFormModal"
-              class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden"
+              class="bg-white p-6 rounded-lg shadow-lg w-[40%] relative border"
             >
-              <div class="bg-white p-6 rounded-lg shadow-lg w-[40%] relative border">
-                <div class="text-center pb-3 mb-4">
-                  <h2 class="text-3 font-bold text-center" id="head-title">Add New Product</h2>
-                  <p class="text-slate-400">
-                    Please fill in the details below.
-                    <!-- <span class="text-red-500 font-medium"
+              <div class="text-center pb-3 mb-4">
+                <h2 class="text-3 font-bold text-center" id="head-title">
+                  Add New Product
+                </h2>
+                <p class="text-slate-400">
+                  Please fill in the details below.
+                  <!-- <span class="text-red-500 font-medium"
                       >* All fields are required</span> -->
+                </p>
+              </div>
+              <form
+                class="flex justify-center lg:justify-between form-col-2 flex-wrap gap-2 form-area"
+              >
+                <div class="flex gap-4">
+                  <div class="w-full">
+                    <label
+                      for="title"
+                      class="block text-sm/6 font-medium text-gray-900"
+                      >Title<span class="ml-1 text-red-500">*</span></label
+                    >
+                    <div class="mt-2">
+                      <input
+                        type="text"
+                        name="title"
+                        placeholder="Product Title"
+                        id="title"
+                        autocomplete="given-name"
+                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      />
+                    </div>
+                  </div>
+                  <div class="w-full">
+                    <label
+                      for="price"
+                      class="block text-sm/6 font-medium text-gray-900"
+                      >Price<span class="ml-1 text-red-500">*</span></label
+                    >
+                    <div class="mt-2">
+                      <input
+                        type="text"
+                        name="price"
+                        placeholder="Add a Price"
+                        id="price"
+                        autocomplete="given-name"
+                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sm:col-span-3">
+                  <label
+                    for="category"
+                    class="block text-sm/6 font-medium text-gray-900"
+                    >Category<span class="ml-1 text-red-500">*</span></label
+                  >
+                  <div class="mt-2 grid grid-cols-1">
+                    <select
+                      id="category"
+                      name="category"
+                      class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-400 border focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    >
+                      <option>Men's Clothing</option>
+                      <option>Women's Clothing</option>
+                      <option>Jewelery</option>
+                      <option>Electronics</option>
+                      <option>Cosmetics</option>
+                      <option>Kid's Clothing</option>
+                      <option>Toys</option>
+                      <option>Gift Item</option>
+                      <option>Others</option>
+                    </select>
+                    <svg
+                      class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      aria-hidden="true"
+                      data-slot="icon"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="sm:col-span-3">
+                  <label
+                    for="image"
+                    class="block text-sm/6 font-medium text-gray-900 pb-2"
+                    >Upload Image<span class="ml-1 text-red-500">*</span></label
+                  >
+                  <input
+                    type="file"
+                    name="image"
+                    id="image"
+                    class="w-full text-slate-500 font-medium text-sm bg-white border file:cursor-pointer cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-slate-500 rounded"
+                  />
+                </div>
+                <div class="sm:col-span-3 w-full">
+                  <label
+                    for="messages"
+                    class="block text-sm/6 font-medium text-gray-900"
+                    >Description<span class="ml-1 text-red-500">*</span></label
+                  >
+                  <textarea
+                    id="messages"
+                    name="messages"
+                    rows="4"
+                    class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Description..."
+                  ></textarea>
+                  <p class="text-slate-400 font-medium pt-3">
+                    <small class="mr-1 text-red-500">*</small> All fields are
+                    required
                   </p>
                 </div>
-                <form
-                  
-                  class="flex justify-center lg:justify-between form-col-2 flex-wrap gap-2 form-area"
-                >
-                  <div class="flex gap-4">
-                    <div class="w-full">
-                      <label
-                        for="title"
-                        class="block text-sm/6 font-medium text-gray-900"
-                        >Title<span class="ml-1 text-red-500">*</span></label
-                      >
-                      <div class="mt-2">
-                        <input
-                          type="text"
-                          name="title"
-                          placeholder="Product Title"
-                          id="title"
-                          autocomplete="given-name"
-                          class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                        />
-                      </div>
-                    </div>
-                    <div class="w-full">
-                      <label
-                        for="price"
-                        class="block text-sm/6 font-medium text-gray-900"
-                        >Price<span class="ml-1 text-red-500">*</span></label
-                      >
-                      <div class="mt-2">
-                        <input
-                          type="text"
-                          name="price"
-                          placeholder="Add a Price"
-                          id="price"
-                          autocomplete="given-name"
-                          class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="sm:col-span-3">
-                    <label
-                      for="category"
-                      class="block text-sm/6 font-medium text-gray-900"
-                      >Category<span class="ml-1 text-red-500">*</span></label
-                    >
-                    <div class="mt-2 grid grid-cols-1">
-                      <select
-                        id="category"
-                        name="category"
-                        class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-400 border focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                      >
-                        <option>Men's Clothing</option>
-                        <option>Women's Clothing</option>
-                        <option>Jewelery</option>
-                        <option>Electronics</option>
-                        <option>Cosmetics</option>
-                        <option>Kid's Clothing</option>
-                        <option>Toys</option>
-                        <option>Gift Item</option>
-                        <option>Others</option>
-                      </select>
-                      <svg
-                        class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                        viewBox="0 0 16 16"
-                        fill="currentColor"
-                        aria-hidden="true"
-                        data-slot="icon"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
-                          clip-rule="evenodd"
-                        ></path>
-                      </svg>
-                    </div>
-                  </div>
-                  <div class="sm:col-span-3">
-                    <label
-                      for="image"
-                      class="block text-sm/6 font-medium text-gray-900 pb-2"
-                      >Upload Image<span class="ml-1 text-red-500">*</span></label
-                    >
-                    <input
-                      type="file"
-                      name="image"
-                      id="image"
-                      class="w-full text-slate-500 font-medium text-sm bg-white border file:cursor-pointer cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-slate-500 rounded"
-                    />
-                  </div>
-                  <div class="sm:col-span-3 w-full">
-                    <label
-                      for="messages"
-                      class="block text-sm/6 font-medium text-gray-900"
-                      >Description<span class="ml-1 text-red-500">*</span></label
-                    >
-                    <textarea
-                      id="messages"
-                      name="messages"
-                      rows="4"
-                      class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Description..."
-                    ></textarea>
-                    <p class="text-slate-400 font-medium pt-3"
-                      ><small class="mr-1 text-red-500">*</small> All fields are required</p>
-                  </div>
-                  <div class="submit-response"></div>
-                  <button
-                    type="submit"
-                    id="productformSubmit"
-                    class="bg-primary p-3 rounded-lg text-white"
-                  >
-                  <span> Add New Product</span>
-                   <i
-                      class="fa-solid fa-circle-notch spinner ml-3"
-                    ></i>
-                  </button>
-                </form>
+                <div class="submit-response"></div>
                 <button
-                  type="button"
-                  id="btnCloseNew"
-                  class="btn-close px-4 py-2 rounded"
-                  id="btn-productClose"
+                  type="submit"
+                  id="productformSubmit"
+                  class="bg-primary p-3 rounded-lg text-white"
                 >
-                  <i class="fa-solid fa-xmark"></i>
+                  <span> Add New Product</span>
+                  <i class="fa-solid fa-circle-notch spinner ml-3"></i>
                 </button>
-              </div>
+              </form>
+              <button
+                type="button"
+                id="btnCloseNew"
+                class="btn-close px-4 py-2 rounded"
+                id="btn-productClose"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
             </div>
-            <!-- Button -->
-            <button
-              type="button"
-              id="btnAddNew"
-              class="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-              <i class="fa-solid fa-plus"></i>
-              <span class="ml-1">Add New</span>
-            </button>
           </div>
           <table class="table-responsive table-products">
             <thead>
@@ -223,7 +249,6 @@
         </div>
       </div>
     </div>
-    <div class="toast-wrapper">
-      </div>
+    <div class="toast-wrapper"></div>
   </body>
 </html>
