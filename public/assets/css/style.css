@@ -95,6 +95,13 @@ table{
       min-width: 9.375rem;
     }
   }
+  .table-list{
+    td{
+      &:nth-child(4){
+        min-width: 12.5rem
+      }
+    }
+  }
 }
 /* animations */
 @keyframes spinner {

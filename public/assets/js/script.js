@@ -224,9 +224,9 @@ tableListFunc(productApi);
 
 function renderTable(productList, sortStatus) {
   const sortedProductList = productList.sort((a, b) => b.id - a.id);
-  const acendingProductList = productList.sort((a, b) => a.id - b.id);
-  console.log("productList:", productList);
-  console.log("acendingProductList:", acendingProductList);
+  // const acendingProductList = productList.sort((a, b) => a.id - b.id);
+  // console.log("productList:", productList);
+  // console.log("acendingProductList:", acendingProductList);
   // const newProductList = sortStatus ? acendingProductList : sortedProductList;
   const tableListItem = sortedProductList
     .map((item, i) => {
@@ -252,7 +252,9 @@ function renderTable(productList, sortStatus) {
 
         <td className="truncate max-w-[200px]">${toTitleCase(item.title)}</td>
          <td><img src="${imageUrl}" alt="${item.category}" /></td>
-        <td>${item.category}</td>
+        <td><span class="border rounded-md border-orange p-2">${
+          item.category
+        }</span></td>
         <td class='truncate max-w-[350px]'>${item.messages}</td>
         <td><b>$${item.price}</b></td>
         <td>
